@@ -1,0 +1,22 @@
+package com.tmtravlr.potioncore.effects;
+
+import com.tmtravlr.potioncore.potion.PotionCorePotion;
+
+/**
+ * Opposite of jump boost. Makes it so you can't jump as high.<br><br>
+ * Instant: no<br>
+ * Amplifier affects it: yes
+ * 
+ * @author Rebeca Rey (Tmtravlr)
+ * @Date January 2016
+ */
+public class PotionWeight extends PotionCorePotion {
+	
+	public static final String NAME = "weight";
+	public static PotionWeight instance = null;
+	
+	public PotionWeight() {
+		super(NAME, true, 0x555555);
+		instance = this;
+	}
+}
