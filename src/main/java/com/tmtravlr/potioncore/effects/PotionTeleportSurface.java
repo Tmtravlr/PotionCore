@@ -90,7 +90,7 @@ public class PotionTeleportSurface extends PotionCorePotion {
             }
 
             entity.worldObj.playSoundEffect(d0, d1, d2, "mob.endermen.portal", 1.0F, 1.0F);
-            entity.playSound("mob.endermen.portal", 1.0F, 1.0F);
+            entity.worldObj.playSoundAtEntity(entity, "mob.endermen.portal", 1.0F, 1.0F);
             return true;
         }
     }

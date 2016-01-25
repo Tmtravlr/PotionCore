@@ -12,13 +12,13 @@ import com.tmtravlr.potioncore.potion.PotionCorePotion;
  * @author Rebeca Rey (Tmtravlr)
  * @Date January 2016
  */
-public class PotionExplosion extends PotionCorePotion {
+public class PotionExplosionSelf extends PotionCorePotion {
 	
-	public static final String NAME = "explode";
-	public static PotionExplosion instance = null;
+	public static final String NAME = "explodeself";
+	public static PotionExplosionSelf instance = null;
 	
-	public PotionExplosion() {
-		super(NAME, true, 0x333333);
+	public PotionExplosionSelf() {
+		super(NAME, false, 0x666666);
 		instance = this;
 	}
 
@@ -33,7 +33,7 @@ public class PotionExplosion extends PotionCorePotion {
 		float strength = (amplifier + 1) * 2;
     	
 		if(!entity.worldObj.isRemote) {
-			entity.worldObj.createExplosion(entity, entity.posX, entity.posY, entity.posZ, strength, entity.worldObj.getGameRules().getBoolean("mobGriefing"));
+			entity.worldObj.createExplosion(entity, entity.posX, entity.posY, entity.posZ, strength, false);
 		}
     }
 }

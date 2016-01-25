@@ -1,5 +1,11 @@
 package com.tmtravlr.potioncore.effects;
 
+import java.util.List;
+
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import com.tmtravlr.potioncore.PotionCoreHelper;
 import com.tmtravlr.potioncore.potion.PotionCorePotion;
 
 /**
@@ -32,6 +38,16 @@ public class PotionTeleportSpawn extends PotionCorePotion {
     @Override
     public boolean canAmplify() {
         return false;
+    }
+    
+    @SideOnly(Side.CLIENT)
+    public void getCreativeItems(List list) {
+    	
+		list.add(PotionCoreHelper.getItemStack(this, 30*20, 0, false));
+		
+		list.add(PotionCoreHelper.getItemStack(this, 20*20, 1, false));
+		
+    	
     }
 	
 }

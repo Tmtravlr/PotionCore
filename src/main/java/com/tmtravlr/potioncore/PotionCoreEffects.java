@@ -31,6 +31,7 @@ public class PotionCoreEffects {
 		potionMap.put(PotionFire.NAME, new PotionData(/*idCount++, */PotionFire.class));
 		potionMap.put(PotionLightning.NAME, new PotionData(/*idCount++, */PotionLightning.class));
 		potionMap.put(PotionExplosion.NAME, new PotionData(/*idCount++, */PotionExplosion.class));
+		potionMap.put(PotionExplosionSelf.NAME, new PotionData(/*idCount++, */PotionExplosionSelf.class));
 		potionMap.put(PotionWeight.NAME, new PotionData(/*idCount++, */PotionWeight.class));
 		potionMap.put(PotionRecoil.NAME, new PotionData(/*idCount++, */PotionRecoil.class));
 		potionMap.put(PotionDrown.NAME, new PotionData(/*idCount++, */PotionDrown.class));
