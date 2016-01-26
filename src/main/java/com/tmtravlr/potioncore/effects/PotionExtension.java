@@ -27,11 +27,6 @@ public class PotionExtension extends PotionCorePotion {
     }
     
     @Override
-    public boolean canAmplify() {
-		return false;
-	}
-    
-    @Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
 		ArrayList<PotionEffect> potionList = new ArrayList<PotionEffect>(entity.getActivePotionEffects());
 		potionList.remove(entity.getActivePotionEffect(this));
@@ -41,7 +36,6 @@ public class PotionExtension extends PotionCorePotion {
 			effect = potionList.remove(entity.getRNG().nextInt(potionList.size()));
 			if (effect.getPotionID() != this.id && !Potion.potionTypes[effect.getPotionID()].isInstant()) {
 				effect.combine(new PotionEffect(effect.getPotionID(), effect.getDuration()+1, effect.getAmplifier(), effect.getIsAmbient(), effect.getIsShowParticles()));
-				//ObfuscationReflectionHelper.setPrivateValue(PotionEffect.class, effect, effect.getDuration()+1, "duration", "field_76460_b");
 			}
 		}
 	}

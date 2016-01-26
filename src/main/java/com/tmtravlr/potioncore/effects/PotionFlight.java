@@ -1,5 +1,8 @@
 package com.tmtravlr.potioncore.effects;
 
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+
 import com.tmtravlr.potioncore.potion.PotionCorePotion;
 
 /**
@@ -25,4 +28,13 @@ public class PotionFlight extends PotionCorePotion {
     public boolean canAmplify() {
 		return false;
 	}
+    
+    @Override
+    public void performEffect(EntityLivingBase entity, int amplifier) {
+    	if(entity instanceof EntityPlayer) {
+    		if(((EntityPlayer)entity).capabilities.isFlying) {
+    			entity.fallDistance = 0;
+    		}
+    	}
+    }
 }

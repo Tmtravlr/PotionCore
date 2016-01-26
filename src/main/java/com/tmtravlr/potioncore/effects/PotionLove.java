@@ -4,6 +4,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.world.WorldServer;
 
 import com.tmtravlr.potioncore.potion.PotionCorePotion;
 
@@ -46,12 +48,20 @@ public class PotionLove extends PotionCorePotion {
     		
     		((EntityAnimal) entity).setInLove(player);
 		}
+		else {
+			performEffect(entity, amplifier);
+		}
 	}
     
     @Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
 		if(entity instanceof EntityAnimal) {
 			((EntityAnimal) entity).setInLove(null);
+		}
+		else {
+			if(entity.worldObj instanceof WorldServer) {
+				((WorldServer)entity.worldObj).spawnParticle(EnumParticleTypes.HEART, true, entity.posX, entity.posY, entity.posZ, 20, 0.5, 2, 0.5, 0.0, new int[0]);
+			}
 		}
 	}
 }

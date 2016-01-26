@@ -48,7 +48,7 @@ public class PotionTeleportSpawn extends PotionCorePotion {
     	
 		list.add(PotionCoreHelper.getItemStack(this, 30*20, 0, false));
 		
-		list.add(PotionCoreHelper.getItemStack(this, 20*20, 1, false));
+		list.add(PotionCoreHelper.getItemStack(this, 20*20, 0, true));
 		
     	
     }

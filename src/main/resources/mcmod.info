@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "potioncore",
+  "name": "Potion Core",
+  "description": "Mod with tons of serious, silly, and awesome potions!",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authors": ["Tmtravlr", "Father Toast"],
+  "credits": "Made by Tmtravlr with help with configs from Father Toast. Also thanks for suggestions and help from many others like Akitori, Darkmega, Snow Shepherd, Master Hill, the Old One, and Bio.",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

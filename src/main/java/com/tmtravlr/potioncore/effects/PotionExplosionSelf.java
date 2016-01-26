@@ -1,6 +1,8 @@
 package com.tmtravlr.potioncore.effects;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityTNTPrimed;
 
 import com.tmtravlr.potioncore.potion.PotionCorePotion;
 
@@ -14,7 +16,7 @@ import com.tmtravlr.potioncore.potion.PotionCorePotion;
  */
 public class PotionExplosionSelf extends PotionCorePotion {
 	
-	public static final String NAME = "explodeself";
+	public static final String NAME = "burst";
 	public static PotionExplosionSelf instance = null;
 
 	public static float explosionSize = 2.0f;
@@ -27,6 +29,16 @@ public class PotionExplosionSelf extends PotionCorePotion {
     @Override
     public boolean isInstant() {
         return true;
+    }
+	
+	@Override
+	public void affectEntity(Entity thrownPotion, Entity thrower, EntityLivingBase entity, int amplifier, double potency) {
+		
+		float strength = (amplifier + 1) * explosionSize * (float)potency;
+		
+		if(!entity.worldObj.isRemote) {
+			entity.worldObj.createExplosion(entity, entity.posX, entity.posY, entity.posZ, strength, false);
+		}
     }
 	
 	@Override
