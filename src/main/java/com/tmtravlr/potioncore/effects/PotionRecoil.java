@@ -15,6 +15,8 @@ public class PotionRecoil extends PotionCorePotion {
 	public static final String NAME = "recoil";
 	public static PotionRecoil instance = null;
 	
+	public static float reflectDamage = 0.1f;
+	
 	public PotionRecoil() {
 		super(NAME, false, 0x008822);
 		instance = this;

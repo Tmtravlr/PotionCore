@@ -10,7 +10,7 @@ import com.tmtravlr.potioncore.potion.PotionCorePotion;
 /**
  * Teleports you to a random spot nearby.<br><br>
  * Instant: yes<br>
- * Amplifier affects it: no
+ * Amplifier affects it: yes
  * 
  * @author Rebeca Rey (Tmtravlr)
  * @Date January 2016
@@ -19,6 +19,8 @@ public class PotionTeleport extends PotionCorePotion {
 
 	public static final String NAME = "teleport";
 	public static PotionTeleport instance = null;
+	
+	public static double teleportRange = 16.0;
 	
 	public PotionTeleport() {
 		super(NAME, false, 0x00CC99);
@@ -39,9 +41,9 @@ public class PotionTeleport extends PotionCorePotion {
         boolean success = false;
         
         while(tries > 0 && !success) {
-	    	double d0 = entity.posX + (entity.getRNG().nextDouble() - 0.5D) * 16.0D * (amplifier+1);
+	    	double d0 = entity.posX + (entity.getRNG().nextDouble() - 0.5D) * teleportRange * (amplifier+1);
 	        double d1 = entity.posY + (double)(entity.getRNG().nextInt(64) - 32);
-	        double d2 = entity.posZ + (entity.getRNG().nextDouble() - 0.5D) * 16.0D * (amplifier+1);
+	        double d2 = entity.posZ + (entity.getRNG().nextDouble() - 0.5D) * teleportRange * (amplifier+1);
 	        success = this.teleportTo(entity, d0, d1, d2);
 	        tries--;
         }

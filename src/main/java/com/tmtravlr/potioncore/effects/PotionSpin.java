@@ -20,6 +20,8 @@ public class PotionSpin extends PotionCorePotion {
 	public static final String TAG_YAW = "potion core - spin yaw";
 	public static PotionSpin instance = null;
 	
+	public static float rotationSpeed = 2.0f;
+	
 	public PotionSpin() {
 		super(NAME, false, 0x99CC00);
 		instance = this;
@@ -28,7 +30,7 @@ public class PotionSpin extends PotionCorePotion {
 	@Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
     	float maxRotation = 8;
-    	float maxRand = 2 * (amplifier+1);
+    	float maxRand = rotationSpeed * (amplifier+1);
     	
     	float pitch = entity.getEntityData().getFloat(TAG_PITCH);
     	float yaw = entity.getEntityData().getFloat(TAG_YAW);

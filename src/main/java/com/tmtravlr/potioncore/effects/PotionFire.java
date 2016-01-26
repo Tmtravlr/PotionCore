@@ -16,6 +16,8 @@ public class PotionFire extends PotionCorePotion {
 
 	public static final String NAME = "fire";
 	public static PotionFire instance = null;
+
+	public static float fireDuration = 10.0f;
 	
 	public PotionFire() {
 		super(NAME, true, 0xFF5500);
@@ -31,7 +33,7 @@ public class PotionFire extends PotionCorePotion {
     public void performEffect(EntityLivingBase entityLivingBaseIn, int amplifier) {
     	
     	//10 seconds of fire for each level
-    	int duration = amplifier+1 * 10;
+    	int duration = Math.round(amplifier+1 * fireDuration);
     	
     	entityLivingBaseIn.setFire(duration);
     }

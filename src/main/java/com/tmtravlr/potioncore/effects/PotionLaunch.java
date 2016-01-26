@@ -22,6 +22,8 @@ public class PotionLaunch extends PotionCorePotion {
 	
 	public static final String NAME = "launch";
 	public static PotionLaunch instance = null;
+
+	public static double launchSpeed = 1.0;
 	
 	public PotionLaunch() {
 		super(NAME, false, 0x00FF00);
@@ -36,7 +38,7 @@ public class PotionLaunch extends PotionCorePotion {
 	@Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
 
-		entity.motionY = amplifier+1;
+		entity.motionY = (amplifier+1) * launchSpeed;
 		
 		if(entity instanceof EntityPlayerMP) {
 			PacketBuffer out = new PacketBuffer(Unpooled.buffer());

@@ -18,6 +18,8 @@ public class PotionRepair extends PotionCorePotion {
 	public static final String NAME = "repair";
 	public static PotionRepair instance = null;
 	
+	public static int repairTime = 100;
+	
 	public PotionRepair() {
 		super(NAME, false, 0x777777);
 		instance = this;
@@ -25,7 +27,7 @@ public class PotionRepair extends PotionCorePotion {
     
     @Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
-    	if(entity.ticksExisted % 100 == 0) {
+    	if(entity.ticksExisted % repairTime == 0) {
 	    	for(int i = 0; i < 5; i++) {
 	    		ItemStack stack = entity.getEquipmentInSlot(i);
 	    		if(stack != null && stack.getItem() != null && stack.getItem().isDamageable() && stack.getItem().isDamaged(stack)) {

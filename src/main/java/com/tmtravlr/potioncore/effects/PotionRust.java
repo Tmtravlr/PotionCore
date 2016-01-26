@@ -19,6 +19,8 @@ public class PotionRust extends PotionCorePotion {
 	public static final String NAME = "rust";
 	public static PotionRust instance = null;
 	
+	public static int damageTime = 20;
+	
 	public PotionRust() {
 		super(NAME, true, 0x773300);
 		instance = this;
@@ -26,7 +28,7 @@ public class PotionRust extends PotionCorePotion {
     
     @Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
-    	if(entity.ticksExisted % 20 == 0) {
+    	if(entity.ticksExisted % damageTime == 0) {
 	    	for(int i = 0; i < 5; i++) {
 	    		ItemStack stack = entity.getEquipmentInSlot(i);
 	    		

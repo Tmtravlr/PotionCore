@@ -25,6 +25,8 @@ public class PotionTeleportSpawn extends PotionCorePotion {
 	public static final String TAG_Z = "potion core - spawn teleport z";
 	public static PotionTeleportSpawn instance = null;
 	
+	public static int teleportDelay = 200;
+	
 	public PotionTeleportSpawn() {
 		super(NAME, false, 0x9955FF);
 		instance = this;
@@ -40,7 +42,8 @@ public class PotionTeleportSpawn extends PotionCorePotion {
         return false;
     }
     
-    @SideOnly(Side.CLIENT)
+    @Override
+	@SideOnly(Side.CLIENT)
     public void getCreativeItems(List list) {
     	
 		list.add(PotionCoreHelper.getItemStack(this, 30*20, 0, false));

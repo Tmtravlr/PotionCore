@@ -61,7 +61,7 @@ public class PotionCoreEventHandler {
 		PotionData weight = PotionCoreEffects.potionMap.get(PotionWeight.NAME);
 		
 		if (weight != null && weight.potion != null && event.entityLiving.isPotionActive(weight.potion)) {
-			event.entityLiving.motionY -= (double)((float)(event.entityLiving.getActivePotionEffect(weight.potion).getAmplifier() + 1) * 0.1F);
+			event.entityLiving.motionY -= (double)((float)(event.entityLiving.getActivePotionEffect(weight.potion).getAmplifier() + 1) * PotionWeight.speedReduction);
         }
 		
 	}
@@ -79,7 +79,7 @@ public class PotionCoreEventHandler {
 		}
 		
 		if (PotionVulnerable.instance != null && event.entityLiving.isPotionActive(PotionVulnerable.instance)) {
-			multiplier *= Math.pow(1.5, event.entityLiving.getActivePotionEffect(PotionVulnerable.instance).getAmplifier()+1);
+			multiplier *= Math.pow(PotionVulnerable.damageMultiplier, event.entityLiving.getActivePotionEffect(PotionVulnerable.instance).getAmplifier()+1);
 		}
 		
 		if(event.source == DamageSource.fall) {
@@ -110,7 +110,7 @@ public class PotionCoreEventHandler {
 			if (PotionRecoil.instance != null && event.entityLiving.isPotionActive(PotionRecoil.instance)) {
 			//Reflect damage back onto the attacker
 			
-				float reflectPercent = MathHelper.clamp_float((float)(event.entityLiving.getActivePotionEffect(PotionRecoil.instance).getAmplifier()+1) * 0.1f, 0.1f, 0.9f);
+				float reflectPercent = MathHelper.clamp_float((float)(event.entityLiving.getActivePotionEffect(PotionRecoil.instance).getAmplifier()+1) * PotionRecoil.reflectDamage, PotionRecoil.reflectDamage, 9 * PotionRecoil.reflectDamage);
 				
 				((EntityLivingBase)event.source.getSourceOfDamage()).attackEntityFrom(DamageSource.causeThornsDamage(event.source.getSourceOfDamage()), event.ammount*reflectPercent);
 			
@@ -155,16 +155,25 @@ public class PotionCoreEventHandler {
 		}
 		
 		if (PotionStepup.instance != null && event.entityLiving.isPotionActive(PotionStepup.instance)) {
-			if(!event.entity.getEntityData().getBoolean(PotionStepup.TAG_NAME)) {
-				event.entity.getEntityData().setBoolean(PotionStepup.TAG_NAME, true);
-				event.entity.getEntityData().setFloat(PotionStepup.TAG_DEFAULT, event.entity.stepHeight);
-				event.entity.stepHeight = 1.0f;
+			// Amplifier is a byte, so 999 can not naturally occur
+			//(use 999 instead of false so that it can update to a higher amp)
+			int effectLevel = event.entityLiving.getActivePotionEffect(PotionStepup.instance).getAmplifier();
+			if(effectLevel != event.entity.getEntityData().getShort(PotionStepup.TAG_NAME)) {
+				float stepHeight = 1.0f + 0.5f * effectLevel;
+				if (event.entity.getEntityData().getShort(PotionStepup.TAG_NAME) >= 999) {
+					event.entity.getEntityData().setFloat(PotionStepup.TAG_DEFAULT, event.entity.stepHeight);
+					event.entity.stepHeight = Math.max(stepHeight, event.entity.stepHeight);
+				}
+				else {
+					event.entity.stepHeight = stepHeight;
+				}
+				event.entity.getEntityData().setShort(PotionStepup.TAG_NAME, (byte) effectLevel);
 			}
 		}
 		else {
-			if(event.entity.getEntityData().getBoolean(PotionStepup.TAG_NAME)) {
-				event.entity.getEntityData().setBoolean(PotionStepup.TAG_NAME, false);
+			if(event.entity.getEntityData().getShort(PotionStepup.TAG_NAME) < 999) {
 				event.entity.stepHeight = event.entity.getEntityData().getFloat(PotionStepup.TAG_DEFAULT);
+				event.entity.getEntityData().setShort(PotionStepup.TAG_NAME, (short) 999);
 			}
 		}
 		
@@ -268,7 +277,7 @@ public class PotionCoreEventHandler {
 					spawnDelay = 0;
 				}
 				
-				if(spawnDelay++ >= 200) {
+				if(spawnDelay++ >= PotionTeleportSpawn.teleportDelay) {
 					double initialX = player.posX;
 					double initialY = player.posY;
 					double initialZ = player.posZ;
@@ -351,7 +360,7 @@ public class PotionCoreEventHandler {
 			
 			event.setCanceled(true);
 			
-			event.entityLiving.setHealth(4*level);
+			event.entityLiving.setHealth(PotionRevival.reviveHealth*level);
 			event.entityLiving.worldObj.playSoundAtEntity(event.entityLiving, "random.levelup", 1.0F, 0.6F);
 			
 			if(event.entity.worldObj instanceof WorldServer) {

@@ -21,6 +21,8 @@ public class PotionLevitate extends PotionCorePotion {
 
 	public static final String NAME = "levitate";
 	public static PotionLevitate instance = null;
+
+	public static double floatSpeed = 0.02;
 	
 	public PotionLevitate() {
 		super(NAME, true, 0xFFCCFF);
@@ -30,10 +32,11 @@ public class PotionLevitate extends PotionCorePotion {
 	@Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
     	
-    	entity.motionY = (double)(amplifier+1) * 0.02;
+    	entity.motionY = (double)(amplifier+1) * floatSpeed;
     }
     
-    @SideOnly(Side.CLIENT)
+    @Override
+	@SideOnly(Side.CLIENT)
     public void getCreativeItems(List list) {
     	
 		list.add(PotionCoreHelper.getItemStack(this, 30*20, 0, false));

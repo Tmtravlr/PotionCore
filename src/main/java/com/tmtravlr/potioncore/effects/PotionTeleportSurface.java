@@ -10,7 +10,7 @@ import com.tmtravlr.potioncore.potion.PotionCorePotion;
 /**
  * Teleports you to the top block in your current x and z coordinates. Doesn't work if you are in a cave-world like the nether.<br><br>
  * Instant: no<br>
- * Amplifier affects it: yes
+ * Amplifier affects it: no
  * 
  * @author Rebeca Rey (Tmtravlr)
  * @Date January 2016

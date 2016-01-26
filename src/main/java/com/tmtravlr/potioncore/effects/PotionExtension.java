@@ -1,18 +1,17 @@
 package com.tmtravlr.potioncore.effects;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import com.tmtravlr.potioncore.potion.PotionCorePotion;
 
 /**
  * Extends the duration of another potion effect on you.<br><br>
  * Instant: no<br>
- * Amplifier affects it: no
+ * Amplifier affects it: yes
  * 
  * @author Rebeca Rey (Tmtravlr)
  * @Date January 2016
@@ -34,19 +33,16 @@ public class PotionExtension extends PotionCorePotion {
     
     @Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
-    	int potionCount = entity.getRNG().nextInt(entity.getActivePotionEffects().size());
-    	Iterator it = entity.getActivePotionEffects().iterator();
-    	
-    	for(PotionEffect effect : entity.getActivePotionEffects()) {
-    		if(potionCount-- <= 0) {
-    			if(effect.getPotionID() == this.id || Potion.potionTypes[effect.getPotionID()].isInstant()) {
-    				potionCount++;
-    			}
-    			else {
-    				ObfuscationReflectionHelper.setPrivateValue(PotionEffect.class, effect, effect.getDuration()+1, "duration", "field_76460_b");
-    				break;
-    			}
-    		}
-    	}
+		ArrayList<PotionEffect> potionList = new ArrayList<PotionEffect>(entity.getActivePotionEffects());
+		potionList.remove(entity.getActivePotionEffect(this));
+		
+		PotionEffect effect;
+		for (int i = amplifier+1; potionList.size() > 0 && i-- > 0;) {
+			effect = potionList.remove(entity.getRNG().nextInt(potionList.size()));
+			if (effect.getPotionID() != this.id && !Potion.potionTypes[effect.getPotionID()].isInstant()) {
+				effect.combine(new PotionEffect(effect.getPotionID(), effect.getDuration()+1, effect.getAmplifier(), effect.getIsAmbient(), effect.getIsShowParticles()));
+				//ObfuscationReflectionHelper.setPrivateValue(PotionEffect.class, effect, effect.getDuration()+1, "duration", "field_76460_b");
+			}
+		}
 	}
 }

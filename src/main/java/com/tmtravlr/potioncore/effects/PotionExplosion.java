@@ -18,6 +18,8 @@ public class PotionExplosion extends PotionCorePotion {
 	
 	public static final String NAME = "explode";
 	public static PotionExplosion instance = null;
+
+	public static float explosionSize = 2.0f;
 	
 	public PotionExplosion() {
 		super(NAME, true, 0x333333);
@@ -32,7 +34,7 @@ public class PotionExplosion extends PotionCorePotion {
 	@Override
 	public void affectEntity(Entity thrownPotion, Entity thrower, EntityLivingBase entity, int amplifier, double potency) {
 		
-		float strength = (amplifier + 1) * 2 * (float)potency;
+		float strength = (amplifier + 1) * explosionSize * (float)potency;
 		
 		EntityLivingBase source = null;
 		
@@ -49,7 +51,7 @@ public class PotionExplosion extends PotionCorePotion {
 	@Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
 		
-		float strength = (amplifier + 1) * 2;
+		float strength = (amplifier + 1) * explosionSize;
     	
 		if(!entity.worldObj.isRemote) {
 			EntityTNTPrimed tnt = new EntityTNTPrimed(entity.worldObj, entity.posX, entity.posY, entity.posZ, entity);

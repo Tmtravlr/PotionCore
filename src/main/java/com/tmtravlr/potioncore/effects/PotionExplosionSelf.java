@@ -16,6 +16,8 @@ public class PotionExplosionSelf extends PotionCorePotion {
 	
 	public static final String NAME = "explodeself";
 	public static PotionExplosionSelf instance = null;
+
+	public static float explosionSize = 2.0f;
 	
 	public PotionExplosionSelf() {
 		super(NAME, false, 0x666666);
@@ -30,7 +32,7 @@ public class PotionExplosionSelf extends PotionCorePotion {
 	@Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
 		
-		float strength = (amplifier + 1) * 2;
+		float strength = (amplifier + 1) * explosionSize;
     	
 		if(!entity.worldObj.isRemote) {
 			entity.worldObj.createExplosion(entity, entity.posX, entity.posY, entity.posZ, strength, false);
