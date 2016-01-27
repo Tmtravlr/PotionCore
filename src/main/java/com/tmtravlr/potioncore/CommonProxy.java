@@ -16,12 +16,10 @@ public class CommonProxy {
 		//FMLCommonHandler.instance().bus().register(new PotionCoreEventHandler());
 	}
 	
-	public void registerRenderers() {
-		//Do nothing on the server
-	}
+	public void registerRenderers() {}
 	
-	public void doPotionSmashEffects(BlockPos pos, ItemStack stack) {
-		//Do nothing on the server
-	}
+	public void loadInverted() {}
+	
+	public void doPotionSmashEffects(BlockPos pos, ItemStack stack) {}
 	
 }

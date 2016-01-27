@@ -26,6 +26,7 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 import com.tmtravlr.potioncore.PotionCoreEffects.PotionData;
 import com.tmtravlr.potioncore.effects.PotionAntidote;
@@ -154,29 +155,6 @@ public class PotionCoreEventHandler {
 			event.entity.fallDistance = 0.0f;
 		}
 		
-		if (PotionStepup.instance != null && event.entityLiving.isPotionActive(PotionStepup.instance)) {
-			// Amplifier is a byte, so 999 can not naturally occur
-			//(use 999 instead of false so that it can update to a higher amp)
-			int effectLevel = event.entityLiving.getActivePotionEffect(PotionStepup.instance).getAmplifier();
-			if(effectLevel != event.entity.getEntityData().getShort(PotionStepup.TAG_NAME)) {
-				float stepHeight = 1.0f + 0.5f * effectLevel;
-				if (event.entity.getEntityData().getShort(PotionStepup.TAG_NAME) >= 999) {
-					event.entity.getEntityData().setFloat(PotionStepup.TAG_DEFAULT, event.entity.stepHeight);
-					event.entity.stepHeight = Math.max(stepHeight, event.entity.stepHeight);
-				}
-				else {
-					event.entity.stepHeight = stepHeight;
-				}
-				event.entity.getEntityData().setShort(PotionStepup.TAG_NAME, (byte) effectLevel);
-			}
-		}
-		else {
-			if(event.entity.getEntityData().getShort(PotionStepup.TAG_NAME) < 999) {
-				event.entity.stepHeight = event.entity.getEntityData().getFloat(PotionStepup.TAG_DEFAULT);
-				event.entity.getEntityData().setShort(PotionStepup.TAG_NAME, (short) 999);
-			}
-		}
-		
 		if(ConfigLoader.fixBlindness) {
 			if(event.entityLiving.isPotionActive(Potion.blindness) && event.entityLiving instanceof EntityLiving && ((EntityLiving)event.entityLiving).getAttackTarget() != null) {
 				int effectLevel = 3 - event.entityLiving.getActivePotionEffect(Potion.blindness).getAmplifier();
@@ -191,66 +169,65 @@ public class PotionCoreEventHandler {
 			}
 		}
 		
-		if ((event.entityLiving instanceof EntityPlayer))
-		{
-			EntityPlayer player = (EntityPlayer)event.entityLiving;
-			
-			if (PotionPerplexity.instance != null && player.isPotionActive(PotionPerplexity.instance)) {
-				if(!player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).getBoolean(PotionPerplexity.TAG_NAME)) {
-					NBTTagCompound persisted = player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
-					persisted.setBoolean(PotionPerplexity.TAG_NAME, true);
-					player.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, persisted);
-					
-					if(player.worldObj.isRemote) {
-						net.minecraft.client.settings.KeyBinding temp = net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindForward;
-						
-						net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindForward = net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindBack;
-						net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindBack = temp;
-						
-						temp = net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindLeft;
-						net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindLeft = net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindRight;
-						net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindRight = temp;
-						
-						temp = net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindSneak;
-						net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindSneak = net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindJump;
-						net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindJump = temp;
+		if(ConfigLoader.fixInvisibility && event.entityLiving.getRNG().nextInt(60) == 0) {
+			if(event.entityLiving instanceof EntityLiving && ((EntityLiving)event.entityLiving).getAttackTarget() != null) {
+				EntityLivingBase target = ((EntityLiving)event.entityLiving).getAttackTarget();
+				if(target.isPotionActive(Potion.invisibility)) {
+					int equipmentCount = 0;
+
+					for(int i = 0; i < 4; i++) {
+						if(target.getEquipmentInSlot(i) != null) {
+							equipmentCount++;
+						}
+					}
+
+					if(event.entityLiving.getDistanceToEntity(target) > 1 + 3*equipmentCount) {
+						((EntityLiving)event.entityLiving).setAttackTarget(null);
 					}
 				}
 			}
-			else {
-				if(player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).getBoolean(PotionPerplexity.TAG_NAME)) {
-					player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).setBoolean(PotionPerplexity.TAG_NAME, false);
-					if(player.worldObj.isRemote) {
-						net.minecraft.client.settings.KeyBinding temp = net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindForward;
-						
-						net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindForward = net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindBack;
-						net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindBack = temp;
-						
-						temp = net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindLeft;
-						net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindLeft = net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindRight;
-						net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindRight = temp;
-						
-						temp = net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindSneak;
-						net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindSneak = net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindJump;
-						net.minecraft.client.Minecraft.getMinecraft().gameSettings.keyBindJump = temp;
-					}
-
+		}
+		
+		if ((event.entityLiving instanceof EntityPlayer))
+		{
+			EntityPlayer player = (EntityPlayer)event.entityLiving;
+			NBTTagCompound persisted = player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+			if(!player.getEntityData().hasKey(EntityPlayer.PERSISTED_NBT_TAG)) {
+				player.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, persisted);
+			}
+			
+			if (PotionStepup.instance != null && player.isPotionActive(PotionStepup.instance)) {
+				
+				int effectLevel = player.getActivePotionEffect(PotionStepup.instance).getAmplifier() + 1;
+				
+				if(effectLevel != persisted.getShort(PotionStepup.TAG_NAME)) {
+					float stepHeight = player.stepHeight + PotionStepup.increase * effectLevel;
 					
+					if(persisted.getShort(PotionStepup.TAG_NAME) == 0) {
+						persisted.setFloat(PotionStepup.TAG_DEFAULT, player.stepHeight);
+					}
+					
+					player.stepHeight = stepHeight;
+					persisted.setShort(PotionStepup.TAG_NAME, (short) effectLevel);
+				}
+			}
+			else {
+				if(persisted.getShort(PotionStepup.TAG_NAME) != 0) {
+					player.stepHeight = persisted.getFloat(PotionStepup.TAG_DEFAULT);
+					persisted.setShort(PotionStepup.TAG_NAME, (short)0);
 				}
 			}
 			
 			if (PotionFlight.instance != null && player.isPotionActive(PotionFlight.instance)) {
-				if(!player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).getBoolean(PotionFlight.TAG_NAME)) {
-					NBTTagCompound persisted = player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
+				if(!persisted.getBoolean(PotionFlight.TAG_NAME)) {
 					persisted.setBoolean(PotionFlight.TAG_NAME, true);
-					player.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, persisted);
 					
 					player.capabilities.allowFlying = true;
 				}
 			}
 			else {
-				if(player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).getBoolean(PotionFlight.TAG_NAME)) {
-					player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).setBoolean(PotionFlight.TAG_NAME, false);
+				if(persisted.getBoolean(PotionFlight.TAG_NAME)) {
+					persisted.setBoolean(PotionFlight.TAG_NAME, false);
 					
 					player.fallDistance = 0;
 					if(!player.capabilities.isCreativeMode) {
@@ -261,18 +238,16 @@ public class PotionCoreEventHandler {
 			}
 			
 			if (PotionTeleportSpawn.instance != null && player.isPotionActive(PotionTeleportSpawn.instance)) {
-				int spawnDelay = player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).getInteger(PotionTeleportSpawn.TAG_NAME);
+				int spawnDelay = persisted.getInteger(PotionTeleportSpawn.TAG_NAME);
 				
 				//If player is moving, reset the timer
-				if(Math.abs(player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).getDouble(PotionTeleportSpawn.TAG_X) - player.posX) > 0.01 ||
-						Math.abs(player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).getDouble(PotionTeleportSpawn.TAG_Y) - player.posY) > 0.01 ||
-						Math.abs(player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).getDouble(PotionTeleportSpawn.TAG_Z) - player.posZ) > 0.01) {
+				if(Math.abs(persisted.getDouble(PotionTeleportSpawn.TAG_X) - player.posX) > 0.01 ||
+						Math.abs(persisted.getDouble(PotionTeleportSpawn.TAG_Y) - player.posY) > 0.01 ||
+						Math.abs(persisted.getDouble(PotionTeleportSpawn.TAG_Z) - player.posZ) > 0.01) {
 					
-					NBTTagCompound persisted = event.entity.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
 					persisted.setDouble(PotionTeleportSpawn.TAG_X, player.posX);
 					persisted.setDouble(PotionTeleportSpawn.TAG_Y, player.posY);
 					persisted.setDouble(PotionTeleportSpawn.TAG_Z, player.posZ);
-					event.entity.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, persisted);
 					
 					spawnDelay = 0;
 				}
@@ -310,7 +285,7 @@ public class PotionCoreEventHandler {
 				        PotionCoreTeleporter.teleportPlayer((EntityPlayerMP)player, null, world, blockpos.getX() + 0.5D, blockpos.getY() + 0.1D, blockpos.getZ() + 0.5D);
 					}
 					
-					player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).setInteger(PotionTeleportSpawn.TAG_NAME, 0);
+					persisted.setInteger(PotionTeleportSpawn.TAG_NAME, 0);
 					player.removePotionEffect(PotionTeleportSpawn.instance.getId());
 					
 					int maxParticles = 128;
@@ -338,14 +313,12 @@ public class PotionCoreEventHandler {
 						player.worldObj.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK, player.posX + player.getRNG().nextFloat()*2 - 1, player.posY + player.getRNG().nextFloat()*8, player.posZ + player.getRNG().nextFloat()*2 - 1, 0, 0, 0);
 					}
 					
-					NBTTagCompound persisted = event.entity.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
 					persisted.setInteger(PotionTeleportSpawn.TAG_NAME, spawnDelay);
-					event.entity.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG, persisted);
 				}
 			}
 			else {
-				if(event.entity.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).getInteger(PotionTeleportSpawn.TAG_NAME) > 0) {
-					event.entity.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).setInteger(PotionTeleportSpawn.TAG_NAME, 0);
+				if(persisted.getInteger(PotionTeleportSpawn.TAG_NAME) > 0) {
+					persisted.setInteger(PotionTeleportSpawn.TAG_NAME, 0);
 				}
 			}
 		}
@@ -353,9 +326,9 @@ public class PotionCoreEventHandler {
 	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onLivingDeath(LivingDeathEvent event) {
-		System.out.println("Killing " + event.entityLiving);
+		
 		if(PotionRevival.instance != null && event.entityLiving.isPotionActive(PotionRevival.instance)) {
-			System.out.println("Reviving " + event.entityLiving);
+			
 			int level = event.entityLiving.getActivePotionEffect(PotionRevival.instance).getAmplifier() + 1;
 			
 			event.setCanceled(true);
@@ -363,9 +336,13 @@ public class PotionCoreEventHandler {
 			event.entityLiving.setHealth(PotionRevival.reviveHealth*level);
 			event.entityLiving.worldObj.playSoundAtEntity(event.entityLiving, "random.levelup", 1.0F, 0.6F);
 			
-			if(event.entity.worldObj instanceof WorldServer) {
-				((WorldServer)event.entityLiving.worldObj).spawnParticle(EnumParticleTypes.HEART, true, event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 20, 0.5, 2, 0.5, 0.0, new int[0]);
-			}
+			PacketBuffer out = new PacketBuffer(Unpooled.buffer());
+			
+			out.writeInt(PacketHandlerClient.REVIVAL_HEARTS);
+			out.writeInt(event.entityLiving.getEntityId());
+			
+			SToCMessage packet = new SToCMessage(out);
+			PotionCore.networkWrapper.sendToAllAround(packet, new TargetPoint(event.entityLiving.worldObj.provider.getDimensionId(), event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 16));
 			
 			event.entityLiving.removePotionEffect(PotionRevival.instance.getId());
 		}

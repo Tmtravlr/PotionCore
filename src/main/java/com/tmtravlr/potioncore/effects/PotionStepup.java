@@ -17,13 +17,10 @@ public class PotionStepup extends PotionCorePotion {
 	public static final String TAG_DEFAULT = "potion core - stepup default";
 	public static PotionStepup instance = null;
 	
+	public static float increase = 0.5f;
+	
 	public PotionStepup() {
 		super(NAME, false, 0x33CC33);
 		instance = this;
     }
-    
-    @Override
-    public boolean canAmplify() {
-		return false;
-	}
 }

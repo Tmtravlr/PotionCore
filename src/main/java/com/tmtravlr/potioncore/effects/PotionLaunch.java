@@ -26,7 +26,7 @@ public class PotionLaunch extends PotionCorePotion {
 	public static double launchSpeed = 1.0;
 	
 	public PotionLaunch() {
-		super(NAME, false, 0x00FF00);
+		super(NAME, true, 0x00FF00);
 		instance = this;
     }
 

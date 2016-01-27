@@ -23,7 +23,7 @@ public class PotionSpin extends PotionCorePotion {
 	public static float rotationSpeed = 2.0f;
 	
 	public PotionSpin() {
-		super(NAME, false, 0x99CC00);
+		super(NAME, true, 0x99CC00);
 		instance = this;
     }
 	

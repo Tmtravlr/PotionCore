@@ -46,6 +46,10 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityPotionCorePotion.class, new RenderPotionCorePotion(Minecraft.getMinecraft().getRenderManager(), Minecraft.getMinecraft().getRenderItem()));
 	}
 	
+	public void loadInverted() {
+		PotionCoreEventHandlerClient.loadInverted();
+	}
+	
 	public void doPotionSmashEffects(BlockPos pos, ItemStack stack) {
 		if(stack == null) {
 			return;
@@ -73,7 +77,7 @@ public class ClientProxy extends CommonProxy {
             double d24 = Math.cos(d23) * d22;
             double d9 = 0.01D + random.nextDouble() * 0.5D;
             double d11 = Math.sin(d23) * d22;
-            EntityFX entityfx = spawnParticle(enumparticletypes.getParticleID(), enumparticletypes.getShouldIgnoreRange(), d13 + d24 * 0.1D, d14 + 0.3D, d16 + d11 * 0.1D, d24, d9, d11, new int[0]);
+            EntityFX entityfx = spawnPotionParticle(enumparticletypes.getParticleID(), enumparticletypes.getShouldIgnoreRange(), d13 + d24 * 0.1D, d14 + 0.3D, d16 + d11 * 0.1D, d24, d9, d11, new int[0]);
 
             if (entityfx != null)
             {
@@ -85,7 +89,7 @@ public class ClientProxy extends CommonProxy {
 
 	}
 	
-	private EntityFX spawnParticle(int type, boolean ignoreRange, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, int... parameters) {
+	private EntityFX spawnPotionParticle(int type, boolean ignoreRange, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, int... parameters) {
 		Minecraft mc = Minecraft.getMinecraft();
 		if (mc != null && mc.getRenderViewEntity() != null && mc.effectRenderer != null)
         {

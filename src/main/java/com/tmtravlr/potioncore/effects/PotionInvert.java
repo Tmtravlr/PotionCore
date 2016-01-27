@@ -19,7 +19,7 @@ public class PotionInvert extends PotionCorePotion {
 	public static PotionInvert instance = null;
 	
 	public PotionInvert() {
-		super(NAME, false, 0x99FF99);
+		super(NAME, true, 0x99FF99);
 		instance = this;
     }
 

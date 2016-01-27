@@ -59,6 +59,7 @@ public class PotionCore
 		ConfigLoader.config = new Configuration(event.getSuggestedConfigurationFile());
         ConfigLoader.load();
         PotionCoreEffects.loadPotionEffects();
+        proxy.loadInverted();
         
         ItemPotionCorePotion.instance = new ItemPotionCorePotion();
         GameRegistry.registerItem(ItemPotionCorePotion.instance, "custom_potion");

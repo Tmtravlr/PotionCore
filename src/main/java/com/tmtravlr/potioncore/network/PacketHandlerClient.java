@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -25,6 +26,7 @@ public class PacketHandlerClient implements IMessageHandler<SToCMessage, IMessag
 	public static final int SET_DROWN = 1;
 	public static final int KNOCK_UP = 2;
 	public static final int POTION_ENTITY = 3;
+	public static final int REVIVAL_HEARTS = 4;
 
 	public IMessage onMessage(SToCMessage packet, MessageContext context)
 	{
@@ -75,6 +77,25 @@ public class PacketHandlerClient implements IMessageHandler<SToCMessage, IMessag
 				e.printStackTrace();
 			}
 			break;
+		}
+		case REVIVAL_HEARTS: {
+			int entityId = buff.readInt();
+			
+			if(world != null) {
+				Entity entity = world.getEntityByID(entityId);
+				
+				if(entity != null) {
+					for (int i = 0; i < 9; ++i)
+		            {
+						double offset = entity.width;
+						double yOffset = entity.getEyeHeight();
+						double xOffset = offset*Math.sin(i*160 / Math.PI);
+						double zOffset = offset*Math.cos(i*160 / Math.PI);
+						
+		                entity.worldObj.spawnParticle(EnumParticleTypes.HEART, entity.posX + xOffset, entity.posY + yOffset, entity.posZ + zOffset, 0, 0, 0, new int[0]);
+		            }
+				}
+			}
 		}
 		default:
 			//Do nothing

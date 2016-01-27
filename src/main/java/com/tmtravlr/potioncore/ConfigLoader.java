@@ -16,6 +16,7 @@ import com.tmtravlr.potioncore.effects.PotionRevival;
 import com.tmtravlr.potioncore.effects.PotionRust;
 import com.tmtravlr.potioncore.effects.PotionSlowfall;
 import com.tmtravlr.potioncore.effects.PotionSpin;
+import com.tmtravlr.potioncore.effects.PotionStepup;
 import com.tmtravlr.potioncore.effects.PotionTeleport;
 import com.tmtravlr.potioncore.effects.PotionTeleportSpawn;
 import com.tmtravlr.potioncore.effects.PotionVulnerable;
@@ -51,13 +52,13 @@ public class ConfigLoader {
 		PotionArchery.damageModifier = config.getFloat("Damage Modifier", PotionArchery.NAME, (float) PotionArchery.damageModifier, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY,
 				"The projectile damage modifier applied by the " + PotionArchery.NAME + " potion per each amplifier level.");
 
-		PotionExplosion.explosionSize = config.getFloat(PotionExplosion.NAME, "Explosion Size", 0.0f, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY,
+		PotionExplosion.explosionSize = config.getFloat("Explosion Size", PotionExplosion.NAME, PotionExplosion.explosionSize, 0.0f, Float.POSITIVE_INFINITY,
 				"The base explosion size for the " + PotionExplosion.NAME + " potion.");
 
 		PotionExplosionSelf.explosionSize = config.getFloat("Explosion Size", PotionExplosionSelf.NAME, PotionExplosionSelf.explosionSize, 0.0f, Float.POSITIVE_INFINITY,
 				"The base explosion size for the " + PotionExplosionSelf.NAME + " potion.");
 
-		PotionFire.fireDuration = config.getFloat("Fire Duration", PotionFire.NAME, PotionFire.fireDuration, 0.0f, Float.POSITIVE_INFINITY,
+		PotionFire.fireDuration = config.getInt("Fire Duration", PotionFire.NAME, PotionFire.fireDuration, 0, Integer.MAX_VALUE,
 				"The fire duration applied by the " + PotionFire.NAME + " potion for each amplifier level.");
 
 		PotionKlutz.damageModifier = config.getFloat("Damage Modifier", PotionKlutz.NAME, (float) PotionKlutz.damageModifier, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY,
@@ -86,6 +87,9 @@ public class ConfigLoader {
 
 		PotionSpin.rotationSpeed = config.getFloat("Rotation Speed", PotionSpin.NAME, PotionSpin.rotationSpeed, 0.0f, Float.POSITIVE_INFINITY,
 				"The base maximum random rotation speed change for the " + PotionSpin.NAME + " potion.");
+
+		PotionStepup.increase = config.getFloat("Step Height Increase", PotionStepup.NAME, PotionStepup.increase, 0.0f, Float.POSITIVE_INFINITY,
+				"The step height increase per level of the " + PotionStepup.NAME + " potion.");
 
 		PotionTeleport.teleportRange = config.getFloat("Teleport Radius", PotionTeleport.NAME, (float) PotionTeleport.teleportRange, 1.0f, Float.POSITIVE_INFINITY,
 				"The base maximum teleport radius for the " + PotionTeleport.NAME + " potion.");

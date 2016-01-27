@@ -17,7 +17,7 @@ public class PotionSlowfall extends PotionCorePotion {
 	public static final String NAME = "slowfall";
 	public static PotionSlowfall instance = null;
 	
-	public static double maxSpeed = 0.2;
+	public static double maxSpeed = 0.4;
 	
 	public PotionSlowfall() {
 		super(NAME, false, 0xFFFFCC);

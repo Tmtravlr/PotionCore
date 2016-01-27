@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.world.WorldServer;
 
 import com.tmtravlr.potioncore.potion.PotionCorePotion;
 
@@ -23,7 +24,7 @@ public class PotionTeleport extends PotionCorePotion {
 	public static double teleportRange = 16.0;
 	
 	public PotionTeleport() {
-		super(NAME, false, 0x00CC99);
+		super(NAME, true, 0x00CC99);
 		instance = this;
     }
 
@@ -103,18 +104,9 @@ public class PotionTeleport extends PotionCorePotion {
         }
         else
         {
-            int i = 128;
-
-            for (int j = 0; j < i; ++j)
-            {
-                double d6 = (double)j / ((double)i - 1.0D);
-                float f = (entity.getRNG().nextFloat() - 0.5F) * 0.2F;
-                float f1 = (entity.getRNG().nextFloat() - 0.5F) * 0.2F;
-                float f2 = (entity.getRNG().nextFloat() - 0.5F) * 0.2F;
-                double d3 = d0 + (entity.posX - d0) * d6 + (entity.getRNG().nextDouble() - 0.5D) * (double)entity.width * 2.0D;
-                double d4 = d1 + (entity.posY - d1) * d6 + entity.getRNG().nextDouble() * (double)entity.height;
-                double d5 = d2 + (entity.posZ - d2) * d6 + (entity.getRNG().nextDouble() - 0.5D) * (double)entity.width * 2.0D;
-                entity.worldObj.spawnParticle(EnumParticleTypes.PORTAL, d3, d4, d5, (double)f, (double)f1, (double)f2, new int[0]);
+            if(entity.worldObj instanceof WorldServer) {
+	            
+                ((WorldServer)entity.worldObj).spawnParticle(EnumParticleTypes.PORTAL, true, entity.posX, entity.posY, entity.posZ, 128, 1, 2, 1, 0, new int[0]);
             }
 
             entity.worldObj.playSoundEffect(d0, d1, d2, "mob.endermen.portal", 1.0F, 1.0F);
