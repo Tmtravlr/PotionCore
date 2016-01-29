@@ -15,6 +15,7 @@ import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
@@ -34,6 +35,7 @@ import com.tmtravlr.potioncore.effects.PotionChance;
 import com.tmtravlr.potioncore.effects.PotionCurse;
 import com.tmtravlr.potioncore.effects.PotionDrown;
 import com.tmtravlr.potioncore.effects.PotionFlight;
+import com.tmtravlr.potioncore.effects.PotionPerplexity;
 import com.tmtravlr.potioncore.effects.PotionPurity;
 import com.tmtravlr.potioncore.effects.PotionRecoil;
 import com.tmtravlr.potioncore.effects.PotionRevival;
@@ -173,11 +175,17 @@ public class PotionCoreEventHandler {
 				if(target.isPotionActive(Potion.invisibility)) {
 					int equipmentCount = 0;
 
-					for(int i = 0; i < 4; i++) {
+					for(int i = 0; i < 5; i++) {
 						if(target.getEquipmentInSlot(i) != null) {
 							equipmentCount++;
 						}
 					}
+					
+					if(target.getArrowCountInEntity() > 0) {
+						equipmentCount += MathHelper.ceiling_float_int((float)target.getArrowCountInEntity() / 10);
+					}
+					
+					if(equipmentCount > 5) equipmentCount = 5;
 
 					if(event.entityLiving.getDistanceToEntity(target) > 1 + 3*equipmentCount) {
 						((EntityLiving)event.entityLiving).setAttackTarget(null);
@@ -199,18 +207,20 @@ public class PotionCoreEventHandler {
 				int effectLevel = player.getActivePotionEffect(PotionStepup.instance).getAmplifier() + 1;
 				
 				if(effectLevel != persisted.getShort(PotionStepup.TAG_NAME)) {
+					float stepHeight = player.stepHeight + PotionStepup.increase * effectLevel;
+					
 					if(persisted.getShort(PotionStepup.TAG_NAME) == 0) {
 						persisted.setFloat(PotionStepup.TAG_DEFAULT, player.stepHeight);
 					}
 					
-					player.stepHeight = persisted.getFloat(PotionStepup.TAG_DEFAULT) + PotionStepup.increase * effectLevel;
+					player.stepHeight = stepHeight;
 					persisted.setShort(PotionStepup.TAG_NAME, (short) effectLevel);
 				}
 			}
 			else {
 				if(persisted.getShort(PotionStepup.TAG_NAME) != 0) {
 					player.stepHeight = persisted.getFloat(PotionStepup.TAG_DEFAULT);
-					persisted.setShort(PotionStepup.TAG_NAME, (short) 0);
+					persisted.setShort(PotionStepup.TAG_NAME, (short)0);
 				}
 			}
 			
@@ -354,11 +364,17 @@ public class PotionCoreEventHandler {
 					if(event.target.isPotionActive(Potion.invisibility)) {
 						int equipmentCount = 0;
 	
-						for(int i = 0; i < 4; i++) {
+						for(int i = 0; i < 5; i++) {
 							if(event.target.getEquipmentInSlot(i) != null) {
 								equipmentCount++;
 							}
 						}
+						
+						if(event.target.getArrowCountInEntity() > 0) {
+							equipmentCount += MathHelper.ceiling_float_int((float)event.target.getArrowCountInEntity() / 10);
+						}
+						
+						if(equipmentCount > 5) equipmentCount = 5;
 	
 						if(entity.getDistanceToEntity(event.target) > 1 + 3*equipmentCount) {
 							entity.setAttackTarget(null);

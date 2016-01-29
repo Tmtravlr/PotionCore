@@ -93,7 +93,6 @@ public class ItemPotionCorePotion extends ItemPotion {
             {
             	EntityPotionCorePotion potionEntity = new EntityPotionCorePotion(worldIn, playerIn, copy);
                 worldIn.spawnEntityInWorld(potionEntity);
-                potionEntity.sendPotionToClient();
             }
 
             playerIn.triggerAchievement(StatList.objectUseStats[Item.getIdFromItem(this)]);

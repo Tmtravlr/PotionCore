@@ -18,6 +18,6 @@ public class RenderPotionCorePotion extends RenderSnowball<EntityPotionCorePotio
 
     public ItemStack func_177082_d(EntityPotionCorePotion entityIn)
     {
-        return entityIn.potion == null ? new ItemStack(Items.potionitem, 1, entityIn.getPotionDamage()) : entityIn.potion;
+        return entityIn.potion == null ? new ItemStack(ItemPotionCorePotion.instance, 1, entityIn.getPotionDamage()) : entityIn.potion;
     }
 }

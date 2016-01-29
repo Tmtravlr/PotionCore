@@ -43,18 +43,6 @@ public class EntityPotionCorePotion extends EntityPotion {
         super(worldIn, throwerIn, potionIn);
         potion = potionIn;
     }
-
-    @SideOnly(Side.CLIENT)
-    public EntityPotionCorePotion(World worldIn, double x, double y, double z, int p_i1791_8_)
-    {
-        this(worldIn, x, y, z, new ItemStack(Items.potionitem, 1, p_i1791_8_));
-    }
-
-    public EntityPotionCorePotion(World worldIn, double x, double y, double z, ItemStack potionIn)
-    {
-        super(worldIn, x, y, z, potionIn);
-        potion = potionIn;
-    }
     
     public void sendPotionToClient() {
     	PacketBuffer out = new PacketBuffer(Unpooled.buffer());
@@ -139,7 +127,7 @@ public class EntityPotionCorePotion extends EntityPotion {
     public void onUpdate() {
     	super.onUpdate();
     	
-    	if(!this.worldObj.isRemote && this.ticksExisted < 10) {
+    	if(!this.worldObj.isRemote && this.ticksExisted < 5) {
     		this.sendPotionToClient();
     	}
     }
