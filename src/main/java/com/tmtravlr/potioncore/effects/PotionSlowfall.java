@@ -28,7 +28,9 @@ public class PotionSlowfall extends PotionCorePotion {
     public void performEffect(EntityLivingBase entity, int amplifier) {
     	double maxMotion = -maxSpeed / (double)(amplifier+1);
     	
-		if(entity.motionY < maxMotion)
-			entity.motionY = maxMotion;
+		if(entity.motionY < maxMotion) {
+			entity.addVelocity(0, maxMotion - entity.motionY, 0);
+			entity.velocityChanged = true;
+		}
     }
 }

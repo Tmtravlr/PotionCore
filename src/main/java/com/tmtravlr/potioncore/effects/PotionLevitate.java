@@ -33,7 +33,8 @@ public class PotionLevitate extends PotionCorePotion {
 	@Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
     	
-    	entity.motionY = (double)(amplifier+1) * floatSpeed;
+		entity.addVelocity(0, (double)(amplifier+1) * floatSpeed - entity.motionY, 0);
+		entity.velocityChanged = true;
     }
     
     @Override
