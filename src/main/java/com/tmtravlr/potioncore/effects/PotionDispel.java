@@ -18,8 +18,8 @@ public class PotionDispel extends PotionCorePotion {
 	public static final String NAME = "dispel";
 	public static PotionDispel instance = null;
 	
-	public PotionDispel() {
-		super(NAME, true, 0x990099);
+	public PotionDispel(int id) {
+		super(id, NAME, true, 0x990099);
 		instance = this;
     }
 

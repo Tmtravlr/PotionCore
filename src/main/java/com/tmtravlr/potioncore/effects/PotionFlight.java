@@ -19,8 +19,8 @@ public class PotionFlight extends PotionCorePotion {
 	public static final String TAG_NAME = "potion core - flight";
 	public static PotionFlight instance = null;
 	
-	public PotionFlight() {
-		super(NAME, false, 0x5599FF);
+	public PotionFlight(int id) {
+		super(id, NAME, false, 0x5599FF);
 		instance = this;
     }
     

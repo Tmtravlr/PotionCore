@@ -15,8 +15,8 @@ public class PotionPurity extends PotionCorePotion {
 	public static final String NAME = "purity";
 	public static PotionPurity instance = null;
 	
-	public PotionPurity() {
-		super(NAME, false, 0xFFFFFF);
+	public PotionPurity(int id) {
+		super(id, NAME, false, 0xFFFFFF);
 		instance = this;
     }
     

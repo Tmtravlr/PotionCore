@@ -2,6 +2,8 @@ package com.tmtravlr.potioncore.potion;
 
 import io.netty.buffer.Unpooled;
 
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.entity.EntityLivingBase;
@@ -13,21 +15,25 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.tmtravlr.potioncore.PotionCore;
 import com.tmtravlr.potioncore.network.PacketHandlerClient;
 import com.tmtravlr.potioncore.network.SToCMessage;
 
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
+import cpw.mods.fml.relauncher.ReflectionHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class EntityPotionCorePotion extends EntityPotion {
 	
-	public boolean smashed = false;
 	public ItemStack potion;
-
+	public boolean smashed = false;
+	
 	public EntityPotionCorePotion(World worldIn)
     {
         super(worldIn);
@@ -43,22 +49,7 @@ public class EntityPotionCorePotion extends EntityPotion {
         super(worldIn, throwerIn, potionIn);
         potion = potionIn;
     }
-    
-    public void sendPotionToClient() {
-    	PacketBuffer out = new PacketBuffer(Unpooled.buffer());
-		
-		out.writeInt(PacketHandlerClient.POTION_ENTITY);
-		out.writeInt(this.getEntityId());
-		out.writeItemStackToBuffer(potion);
-		
-		SToCMessage packet = new SToCMessage(out);
-		PotionCore.networkWrapper.sendToDimension(packet, this.worldObj.provider.getDimensionId());
-    }
-    
-    public void doSmashEffects() {
-    	 PotionCore.proxy.doPotionSmashEffects(new BlockPos(this), potion);
-    }
-    
+
     /**
      * Called when this EntityThrowable hits a block or entity.
      */
@@ -66,17 +57,20 @@ public class EntityPotionCorePotion extends EntityPotion {
     {
         if (!this.worldObj.isRemote)
         {
-            List<PotionEffect> list = ItemPotionCorePotion.instance.getEffects(potion);
+            List list = Items.potionitem.getEffects(potion);
 
             if (list != null && !list.isEmpty())
             {
-                AxisAlignedBB axisalignedbb = this.getEntityBoundingBox().expand(4.0D, 2.0D, 4.0D);
-                List<EntityLivingBase> list1 = this.worldObj.<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, axisalignedbb);
+                AxisAlignedBB axisalignedbb = this.boundingBox.expand(4.0D, 2.0D, 4.0D);
+                List list1 = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, axisalignedbb);
 
-                if (!list1.isEmpty())
+                if (list1 != null && !list1.isEmpty())
                 {
-                    for (EntityLivingBase entitylivingbase : list1)
+                    Iterator iterator = list1.iterator();
+
+                    while (iterator.hasNext())
                     {
+                        EntityLivingBase entitylivingbase = (EntityLivingBase)iterator.next();
                         double d0 = this.getDistanceSqToEntity(entitylivingbase);
 
                         if (d0 < 16.0D)
@@ -88,13 +82,16 @@ public class EntityPotionCorePotion extends EntityPotion {
                                 d1 = 1.0D;
                             }
 
-                            for (PotionEffect potioneffect : list)
+                            Iterator iterator1 = list.iterator();
+
+                            while (iterator1.hasNext())
                             {
+                                PotionEffect potioneffect = (PotionEffect)iterator1.next();
                                 int i = potioneffect.getPotionID();
 
                                 if (Potion.potionTypes[i].isInstant())
                                 {
-                                    Potion.potionTypes[i].affectEntity(this, this.getThrower(), entitylivingbase, potioneffect.getAmplifier(), d1);
+                                    Potion.potionTypes[i].affectEntity(this.getThrower(), entitylivingbase, potioneffect.getAmplifier(), d1);
                                 }
                                 else
                                 {
@@ -110,15 +107,32 @@ public class EntityPotionCorePotion extends EntityPotion {
                     }
                 }
             }
+
             this.worldObj.playSoundAtEntity(this, "game.potion.smash", 1.0F, this.worldObj.rand.nextFloat() * 0.1F + 0.9F);
             this.setDead();
         }
         else {
-        	if(!smashed) {
-        		doSmashEffects();
-        		smashed = true;
-        	}
+	        if(!smashed) {
+	        	PotionCore.proxy.doPotionSmashEffects(this.posX, this.posY, this.posZ, potion);
+	        	smashed = true;
+	        }
         }
+    }
+    
+    public void sendPotionToClient() {
+    	PacketBuffer out = new PacketBuffer(Unpooled.buffer());
+		
+		out.writeInt(PacketHandlerClient.POTION_ENTITY);
+		out.writeInt(this.getEntityId());
+		try {
+			out.writeItemStackToBuffer(potion);
+		} catch (IOException e) {
+			FMLLog.severe("[Potion Core] Couldn't write potion item stack to packet!");
+			e.printStackTrace();
+		}
+		
+		SToCMessage packet = new SToCMessage(out);
+		PotionCore.networkWrapper.sendToDimension(packet, this.worldObj.provider.dimensionId);
     }
     
     /**

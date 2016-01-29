@@ -21,8 +21,8 @@ public class PotionExplosion extends PotionCorePotion {
 
 	public static float explosionSize = 2.0f;
 	
-	public PotionExplosion() {
-		super(NAME, true, 0x333333);
+	public PotionExplosion(int id) {
+		super(id, NAME, true, 0x333333);
 		instance = this;
 	}
 
@@ -32,7 +32,7 @@ public class PotionExplosion extends PotionCorePotion {
     }
 	
 	@Override
-	public void affectEntity(Entity thrownPotion, Entity thrower, EntityLivingBase entity, int amplifier, double potency) {
+	public void affectEntity(EntityLivingBase thrower, EntityLivingBase entity, int amplifier, double potency) {
 		
 		float strength = (amplifier + 1) * explosionSize * (float)potency;
 		

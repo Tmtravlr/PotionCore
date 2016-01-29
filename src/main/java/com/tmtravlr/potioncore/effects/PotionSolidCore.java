@@ -17,10 +17,10 @@ public class PotionSolidCore extends PotionCorePotion {
 	public static final String NAME = "solidcore";
 	public static PotionSolidCore instance = null;
 	
-	public PotionSolidCore() {
-		super(NAME, false, 0x222222);
+	public PotionSolidCore(int id) {
+		super(id, NAME, false, 0x222222);
 		instance = this;
-		this.registerPotionAttributeModifier(SharedMonsterAttributes.knockbackResistance, "9bface7b-f0d0-4bdb-9c0c-09c3237fa99c", 1, 0);
+		this.func_111184_a(SharedMonsterAttributes.knockbackResistance, "9bface7b-f0d0-4bdb-9c0c-09c3237fa99c", 1, 0);
     }
     
     @Override

@@ -3,6 +3,7 @@ package com.tmtravlr.potioncore;
 import java.util.EnumSet;
 import java.util.Iterator;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,7 +19,6 @@ import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 /**
  * Used to teleport between dimensions.
@@ -60,7 +60,7 @@ public class PotionCoreTeleporter extends Teleporter
 		this(worldServerOld, xToSet, yToSet, zToSet, pitchToSet, yawToSet, 0, 0, 0);
 	}
 
-	public void placeInPortal(Entity entity, float par8) {
+	public void placeInPortal(Entity entity, double posX, double posY, double posZ, float par8) {
 
 		entity.setLocationAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 		entity.setRotationYawHead(this.yaw);
@@ -88,8 +88,8 @@ public class PotionCoreTeleporter extends Teleporter
 	
 	public static Entity teleportEntity(Entity entity, World newWorld, double x, double y, double z, float pitch, float yaw, 
 			double motionX, double motionY, double motionZ) {
-		int dimension = newWorld.provider.getDimensionId();
-		int currentDimension = entity.worldObj.provider.getDimensionId();
+		int dimension = newWorld.provider.dimensionId;
+		int currentDimension = entity.worldObj.provider.dimensionId;
 		if (dimension != currentDimension)
 		{
 			return transferEntityToDimension(entity, dimension, x, y, z, pitch, yaw, motionX, motionY, motionZ);
@@ -104,21 +104,21 @@ public class PotionCoreTeleporter extends Teleporter
 		return entity;
 	}
 	
-	public static void teleportPlayer(EntityPlayerMP player, EnumSet packetSet, World newWorld, double x, double y, double z) {
+	public static void teleportPlayer(EntityPlayerMP player, World newWorld, double x, double y, double z) {
 		
-		teleportPlayer(player, packetSet, newWorld, x, y, z, player.rotationPitch, player.rotationYaw, 0, 0, 0);
+		teleportPlayer(player, newWorld, x, y, z, player.rotationPitch, player.rotationYaw, 0, 0, 0);
 	}
 
-	public static void teleportPlayer(EntityPlayerMP player, EnumSet packetSet, World newWorld, double x, double y, double z, float pitch, float yaw) {
+	public static void teleportPlayer(EntityPlayerMP player, World newWorld, double x, double y, double z, float pitch, float yaw) {
 		
-		teleportPlayer(player, packetSet, newWorld, x, y, z, pitch, yaw, 0, 0, 0);
+		teleportPlayer(player, newWorld, x, y, z, pitch, yaw, 0, 0, 0);
 	}
 	
-	public static void teleportPlayer(EntityPlayerMP player, EnumSet packetSet, World newWorld, double x, double y, double z, float pitch, float yaw, 
+	public static void teleportPlayer(EntityPlayerMP player, World newWorld, double x, double y, double z, float pitch, float yaw, 
 			double motionX, double motionY, double motionZ) {
 		
-		int dimension = newWorld.provider.getDimensionId();
-		int currentDimension = player.worldObj.provider.getDimensionId();
+		int dimension = newWorld.provider.dimensionId;
+		int currentDimension = player.worldObj.provider.dimensionId;
 		if (currentDimension != dimension)
 		{
 			if (!newWorld.isRemote) {
@@ -131,13 +131,9 @@ public class PotionCoreTeleporter extends Teleporter
 			}
 		}
 		else {
-			if(packetSet != null) {
-				player.playerNetServerHandler.setPlayerLocation(x, y, z, yaw, pitch, packetSet);
-			}
-			else {
-				player.playerNetServerHandler.setPlayerLocation(x, y, z, yaw, pitch);
-			}
-			player.setRotationYawHead(yaw);
+			
+			player.playerNetServerHandler.setPlayerLocation(x, y, z, yaw, pitch);
+			
 			player.motionX = motionX;
 			player.motionY = motionY;
 			player.motionZ = motionZ;
@@ -149,13 +145,13 @@ public class PotionCoreTeleporter extends Teleporter
 	
 	//Private stuff; This may not work if called without the stuff above.
 	
-	private static void forceTeleportPlayerFromEnd(EntityPlayerMP player, int newDimension, Teleporter colourfulTeleporter)
+	private static void forceTeleportPlayerFromEnd(EntityPlayerMP player, int newDimension, Teleporter teleporter)
 	{
 		int j = player.dimension;
 		WorldServer worldServerOld = player.mcServer.worldServerForDimension(player.dimension);
 		player.dimension = newDimension;
 		WorldServer worldServerNew = player.mcServer.worldServerForDimension(player.dimension);
-		player.playerNetServerHandler.sendPacket(new S07PacketRespawn(player.dimension, player.worldObj.getDifficulty(), player.worldObj.getWorldInfo().getTerrainType(), player.theItemInWorldManager.getGameType()));
+		player.playerNetServerHandler.sendPacket(new S07PacketRespawn(player.dimension, player.worldObj.difficultySetting, player.worldObj.getWorldInfo().getTerrainType(), player.theItemInWorldManager.getGameType()));
 		worldServerOld.removePlayerEntityDangerously(player);
 		player.isDead = false;
 
@@ -172,7 +168,7 @@ public class PotionCoreTeleporter extends Teleporter
 		if (player.isEntityAlive())
 		{
 			player.setLocationAndAngles(d0, player.posY, d1, player.rotationYaw, player.rotationPitch);
-			colourfulTeleporter.placeInPortal(player, f);
+			teleporter.placeInPortal(player, player.posX, player.posY, player.posZ, f);
 			worldServerNew.spawnEntityInWorld(player);
 			worldServerNew.updateEntityWithOptionalForce(player, false);
 		}
@@ -180,7 +176,7 @@ public class PotionCoreTeleporter extends Teleporter
 
 		player.setWorld(worldServerNew);
 
-		player.mcServer.getConfigurationManager().preparePlayer(player, worldServerOld);
+		player.mcServer.getConfigurationManager().func_72375_a(player, worldServerOld);
 		player.playerNetServerHandler.setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
 		player.theItemInWorldManager.setWorld(worldServerNew);
 		player.mcServer.getConfigurationManager().updateTimeAndWeatherForPlayer(player, worldServerNew);
@@ -218,7 +214,7 @@ public class PotionCoreTeleporter extends Teleporter
 			Entity entity = EntityList.createEntityByName(EntityList.getEntityString(toTeleport), worldServerNew);
 			if (entity != null)
 			{
-				entity.copyDataFromOld(toTeleport);
+				entity.copyDataFrom(toTeleport, true);
 				worldServerNew.spawnEntityInWorld(entity);
 			}
 			toTeleport.isDead = true;
@@ -237,7 +233,7 @@ public class PotionCoreTeleporter extends Teleporter
 		worldServerNew.spawnEntityInWorld(entity);
 		entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
 		worldServerNew.updateEntityWithOptionalForce(entity, false);
-		teleporter.placeInPortal(entity, 0.0F);
+		teleporter.placeInPortal(entity, entity.posX, entity.posY, entity.posZ, 0.0F);
 
 		entity.setWorld(worldServerNew);
 	}

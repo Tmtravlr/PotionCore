@@ -19,8 +19,8 @@ public class PotionSlowfall extends PotionCorePotion {
 	
 	public static double maxSpeed = 0.4;
 	
-	public PotionSlowfall() {
-		super(NAME, false, 0xFFFFCC);
+	public PotionSlowfall(int id) {
+		super(id, NAME, false, 0xFFFFCC);
 		instance = this;
     }
 	

@@ -2,11 +2,11 @@ package com.tmtravlr.potioncore.effects;
 
 import java.util.List;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 import com.tmtravlr.potioncore.PotionCoreHelper;
 import com.tmtravlr.potioncore.potion.PotionCorePotion;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Teleports you to your spawn point if you don't move for 10 seconds.<br><br>
@@ -27,8 +27,8 @@ public class PotionTeleportSpawn extends PotionCorePotion {
 	
 	public static int teleportDelay = 200;
 	
-	public PotionTeleportSpawn() {
-		super(NAME, false, 0x9955FF);
+	public PotionTeleportSpawn(int id) {
+		super(id, NAME, false, 0x9955FF);
 		instance = this;
     }
 

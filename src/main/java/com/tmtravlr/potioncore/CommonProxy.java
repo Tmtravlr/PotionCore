@@ -1,8 +1,8 @@
 package com.tmtravlr.potioncore;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 
 public class CommonProxy {
@@ -13,13 +13,13 @@ public class CommonProxy {
 	
 	public void registerEventHandlers() {
 		MinecraftForge.EVENT_BUS.register(new PotionCoreEventHandler());
-		//FMLCommonHandler.instance().bus().register(new PotionCoreEventHandler());
+		FMLCommonHandler.instance().bus().register(new PotionCoreEventHandler());
 	}
 	
 	public void registerRenderers() {}
 	
 	public void loadInverted() {}
 	
-	public void doPotionSmashEffects(BlockPos pos, ItemStack stack) {}
+	public void doPotionSmashEffects(double x, double y, double z, ItemStack stack) {}
 	
 }

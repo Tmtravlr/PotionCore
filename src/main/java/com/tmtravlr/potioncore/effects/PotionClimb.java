@@ -23,8 +23,8 @@ public class PotionClimb extends PotionCorePotion {
 	public static final String NAME = "climb";
 	public static PotionClimb instance = null;
 	
-	public PotionClimb() {
-		super(NAME, false, 0xCC5500);
+	public PotionClimb(int id) {
+		super(id, NAME, false, 0xCC5500);
 		instance = this;
     }
     

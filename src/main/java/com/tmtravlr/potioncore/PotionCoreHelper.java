@@ -1,10 +1,14 @@
 package com.tmtravlr.potioncore;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
@@ -13,10 +17,29 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraft.world.World;
 
-import com.tmtravlr.potioncore.effects.*;
+import com.google.common.base.Function;
+import com.tmtravlr.potioncore.effects.PotionAntidote;
+import com.tmtravlr.potioncore.effects.PotionArchery;
+import com.tmtravlr.potioncore.effects.PotionBless;
+import com.tmtravlr.potioncore.effects.PotionCure;
+import com.tmtravlr.potioncore.effects.PotionCurse;
+import com.tmtravlr.potioncore.effects.PotionDispel;
+import com.tmtravlr.potioncore.effects.PotionDrown;
+import com.tmtravlr.potioncore.effects.PotionFire;
+import com.tmtravlr.potioncore.effects.PotionKlutz;
+import com.tmtravlr.potioncore.effects.PotionLevitate;
+import com.tmtravlr.potioncore.effects.PotionRepair;
+import com.tmtravlr.potioncore.effects.PotionRust;
+import com.tmtravlr.potioncore.effects.PotionSlowfall;
+import com.tmtravlr.potioncore.effects.PotionVulnerable;
+import com.tmtravlr.potioncore.effects.PotionWeight;
 import com.tmtravlr.potioncore.potion.ItemPotionCorePotion;
+
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
+import cpw.mods.fml.common.network.internal.FMLMessage.EntitySpawnMessage;
 
 public class PotionCoreHelper {
 
@@ -34,8 +57,63 @@ public class PotionCoreHelper {
 	
 	public static HashMap<Potion, Potion> oppositeEffects = new HashMap<Potion, Potion>();
 	
-	public static final IAttribute projectileDamage = new RangedAttribute((IAttribute)null, "generic.projectileDamage", 1.0D, 0.0D, 2048.0D);
+	public static final IAttribute projectileDamage = new RangedAttribute("generic.projectileDamage", 1.0D, 0.0D, 2048.0D);
+	
+	
+	//Increase the max number of potion ids to 256
+	public static void increasePotionTypesSize() {
+		Field potionTypes = null;
+		FMLLog.info("[Potion Core] Attempting to increase max number of potions.");
+		try
+		{
+			//Get the potion types field from the fortress generation.
+			potionTypes = Potion.class.getDeclaredField("field_76425_a");
 
+			//Make it not a final field... (This is so sketchy...)
+			Field modifiersField = Field.class.getDeclaredField("modifiers");
+			modifiersField.setAccessible(true);
+			modifiersField.setInt(potionTypes, potionTypes.getModifiers() & ~Modifier.FINAL);
+		}
+		catch (Exception e)
+		{
+			try
+			{
+				//Get the potion types field from the fortress generation.
+				potionTypes = Potion.class.getDeclaredField("potionTypes");
+
+				//Make it not a final field... (This is so sketchy...)
+				Field modifiersField = Field.class.getDeclaredField("modifiers");
+				modifiersField.setAccessible(true);
+				modifiersField.setInt(potionTypes, potionTypes.getModifiers() & ~Modifier.FINAL);
+			}
+			catch (Exception e2)
+			{
+				FMLLog.warning("[Potion Core] Couldn't increase the maximum number of potions!");
+				e.printStackTrace();
+				e2.printStackTrace();
+			}
+		}
+		
+		if(potionTypes != null) {
+			try {
+				Potion[] newPotionTypes = new Potion[256];
+				
+				for(int i = 0; i < newPotionTypes.length && i < Potion.potionTypes.length; i++) {
+					newPotionTypes[i] = Potion.potionTypes[i];
+				}
+				
+				potionTypes.set(null, newPotionTypes);
+			} catch (Exception e) {
+				FMLLog.warning("[Potion Core] Couldn't increase the maximum number of potions!");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static boolean isBadEffect(Potion potion) {
+		return ObfuscationReflectionHelper.getPrivateValue(Potion.class, potion, "field_76418_K", "isBadEffect");
+	}
+	
 	//Loads the opposite effects for the inversion potion
 	public static void loadInversions() {
 		loadInversion(Potion.blindness, Potion.nightVision);
@@ -43,7 +121,7 @@ public class PotionCoreHelper {
 		loadInversion(Potion.digSpeed, Potion.digSlowdown);
 		loadInversion(Potion.fireResistance, PotionFire.instance);
 		loadInversion(Potion.harm, Potion.heal);
-		loadInversion(Potion.hunger, Potion.saturation);
+		loadInversion(Potion.hunger, Potion.field_76443_y);
 		loadInversion(Potion.jump, PotionWeight.instance);
 		loadInversion(Potion.moveSlowdown, Potion.moveSpeed);
 		loadInversion(Potion.poison, PotionAntidote.instance);
@@ -77,7 +155,7 @@ public class PotionCoreHelper {
     	while(it.hasNext()) {
     		PotionEffect effect = it.next();
     		
-    		if(!Potion.potionTypes[effect.getPotionID()].isBadEffect()) {
+    		if(!isBadEffect(Potion.potionTypes[effect.getPotionID()])) {
     			idsToRemove.add(effect.getPotionID());
     		}
     		
@@ -100,7 +178,7 @@ public class PotionCoreHelper {
     	while(it.hasNext()) {
     		PotionEffect effect = it.next();
     		
-    		if(Potion.potionTypes[effect.getPotionID()].isBadEffect()) {
+    		if(isBadEffect(Potion.potionTypes[effect.getPotionID()])) {
     			idsToRemove.add(effect.getPotionID());
     		}
     		
@@ -148,7 +226,7 @@ public class PotionCoreHelper {
 	 */
 	public static void invertPotionEffects(EntityLivingBase entity) {
 		PotionEffect[] effects = new PotionEffect[0];
-		effects = entity.getActivePotionEffects().toArray(effects);
+		effects = (PotionEffect[]) entity.getActivePotionEffects().toArray(effects);
     	
     	for(int i = 0; i < effects.length; i++) {
     		PotionEffect effect = effects[i];
@@ -163,7 +241,7 @@ public class PotionCoreHelper {
     			}
     			
     			entity.removePotionEffect(effect.getPotionID());
-    			entity.addPotionEffect(new PotionEffect(potion.getId(), duration, effect.getAmplifier(), effect.getIsAmbient(), effect.getIsShowParticles()));
+    			entity.addPotionEffect(new PotionEffect(potion.getId(), duration, effect.getAmplifier(), effect.getIsAmbient()));
     		}
     			
     	}
@@ -183,7 +261,8 @@ public class PotionCoreHelper {
     	
     	tag = new NBTTagCompound();
 		tag.setTag("CustomPotionEffects", new NBTTagList());
-		tag.getTagList("CustomPotionEffects", 0).appendTag(writePotionToTag(potion, duration, amplifier));
+		NBTTagCompound potionTag = new NBTTagCompound();
+		tag.getTagList("CustomPotionEffects", 0).appendTag(new PotionEffect(potion.getId(), duration, amplifier).writeCustomPotionEffectToNBT(potionTag));
 		
 		toAdd = new ItemStack(ItemPotionCorePotion.instance);
 		if(splash) {
@@ -193,63 +272,6 @@ public class PotionCoreHelper {
 		
 		return toAdd;
 	}
-	
-	/**
-	 * Returns an {@link NBTTagCompound} for an ItemStack for an {@link ItemPotionCorePotion}
-	 * @param potion Potion to use
-	 * @param duration Duration of the potion
-	 * @param amplifier Amplifier of the potion
-	 * @return Tag with this effect
-	 */
-	public static NBTTagCompound writePotionToTag(Potion potion, int duration, int amplifier) {
-		NBTTagCompound tag = new NBTTagCompound();
-		tag.setString("Id", GameData.getPotionRegistry().getNameForObject(potion).toString());
-		tag.setInteger("Amplifier", amplifier);
-		tag.setInteger("Duration", duration);
-		return tag;
-	}
-	
-	/**
-     * Reads a custom potion effect from a potion item's NBT data, with support
-     * for the new resource locations as the Id.
-     */
-    public static PotionEffect readPotionEffectFromTag(NBTTagCompound tag)
-    {
-        int id = 0;
-        
-        if(tag.hasKey("Id", 8)) {
-        	String idString = tag.getString("Id");
-        	Potion potion = Potion.getPotionFromResourceLocation(idString);
-        	if(potion != null) {
-        		id = potion.getId();
-        	}
-        	else {
-        		return null;
-        	}
-        }
-        else {
-        	id = tag.getByte("Id") & 0xff;
-        }
-
-        if (id >= 0 && id < Potion.potionTypes.length && Potion.potionTypes[id] != null)
-        {
-            int j = tag.getByte("Amplifier");
-            int k = tag.getInteger("Duration");
-            boolean flag = tag.getBoolean("Ambient");
-            boolean flag1 = true;
-
-            if (tag.hasKey("ShowParticles", 1))
-            {
-                flag1 = tag.getBoolean("ShowParticles");
-            }
-
-            return new PotionEffect(id, k, j, flag, flag1);
-        }
-        else
-        {
-            return null;
-        }
-    }
     
     /**
 	 * Given a {@link Collection}<{@link PotionEffect}> will return an Integer color.

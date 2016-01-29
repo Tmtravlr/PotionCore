@@ -8,17 +8,17 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import com.tmtravlr.potioncore.PotionCore;
 import com.tmtravlr.potioncore.effects.PotionDrown;
 import com.tmtravlr.potioncore.potion.EntityPotionCorePotion;
 import com.tmtravlr.potioncore.potion.ItemPotionCorePotion;
+
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class PacketHandlerClient implements IMessageHandler<SToCMessage, IMessage> {
 
@@ -67,7 +67,7 @@ public class PacketHandlerClient implements IMessageHandler<SToCMessage, IMessag
 					
 					if(entity instanceof EntityPotionCorePotion) {
 						if(stack.getItem() == null) {
-							stack.setItem(ItemPotionCorePotion.instance);
+							stack = new ItemStack(ItemPotionCorePotion.instance, 1, stack.getItemDamage());
 						}
 						((EntityPotionCorePotion) entity).potion = stack;
 					}
@@ -92,7 +92,7 @@ public class PacketHandlerClient implements IMessageHandler<SToCMessage, IMessag
 						double xOffset = offset*Math.sin(i*160 / Math.PI);
 						double zOffset = offset*Math.cos(i*160 / Math.PI);
 						
-		                entity.worldObj.spawnParticle(EnumParticleTypes.HEART, entity.posX + xOffset, entity.posY + yOffset, entity.posZ + zOffset, 0, 0, 0, new int[0]);
+		                entity.worldObj.spawnParticle("heart", entity.posX + xOffset, entity.posY + yOffset, entity.posZ + zOffset, 0, 0, 0);
 		            }
 				}
 			}

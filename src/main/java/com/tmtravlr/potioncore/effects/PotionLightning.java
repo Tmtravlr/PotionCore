@@ -18,8 +18,8 @@ public class PotionLightning extends PotionCorePotion {
 	public static final String NAME = "lightning";
 	public static PotionLightning instance = null;
 	
-	public PotionLightning() {
-		super(NAME, true, 0xFFFF00);
+	public PotionLightning(int id) {
+		super(id, NAME, true, 0xFFFF00);
 		instance = this;
 	}
 

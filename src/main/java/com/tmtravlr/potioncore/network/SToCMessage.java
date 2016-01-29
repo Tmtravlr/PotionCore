@@ -1,7 +1,7 @@
 package com.tmtravlr.potioncore.network;
 
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class SToCMessage implements IMessage{
 	private byte[] data;

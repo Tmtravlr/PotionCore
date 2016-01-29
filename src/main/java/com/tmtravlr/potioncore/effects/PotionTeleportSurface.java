@@ -2,8 +2,7 @@ package com.tmtravlr.potioncore.effects;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldServer;
 
 import com.tmtravlr.potioncore.potion.PotionCorePotion;
@@ -21,8 +20,8 @@ public class PotionTeleportSurface extends PotionCorePotion {
 	public static final String NAME = "teleportsurface";
 	public static PotionTeleportSurface instance = null;
 	
-	public PotionTeleportSurface() {
-		super(NAME, false, 0x00FF99);
+	public PotionTeleportSurface(int id) {
+		super(id, NAME, false, 0x00FF99);
 		instance = this;
     }
 
@@ -38,13 +37,15 @@ public class PotionTeleportSurface extends PotionCorePotion {
     
     @Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
-    	BlockPos pos = entity.worldObj.getTopSolidOrLiquidBlock(entity.getPosition());
+    	int x = MathHelper.floor_double(entity.posX);
+    	int z = MathHelper.floor_double(entity.posZ);
+    	int y = entity.worldObj.getTopSolidOrLiquidBlock(x, z);
     	
-    	if(entity.worldObj.getBlockState(pos.down()).getBlock() == Blocks.bedrock) {
-    		pos = entity.getPosition();
+    	if(entity.worldObj.getBlock(x, y - 1, z) == Blocks.bedrock) {
+    		y = MathHelper.floor_double(entity.posY);
     	}
     	
-        this.teleportTo(entity, pos.getX() + 0.5D, pos.getY() + 0.1D, pos.getZ() + 0.5D);
+        this.teleportTo(entity, x + 0.5D, y + 0.1D, z + 0.5D);
 	}
     
     private boolean teleportTo(EntityLivingBase entity, double x, double y, double z) {
@@ -57,13 +58,12 @@ public class PotionTeleportSurface extends PotionCorePotion {
         entity.posY = event.targetY;
         entity.posZ = event.targetZ;
         boolean flag = false;
-        BlockPos blockpos = new BlockPos(entity.posX, entity.posY, entity.posZ);
 
-        if (entity.worldObj.isBlockLoaded(blockpos))
+        if (entity.worldObj.blockExists(MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ)))
         {
             entity.setPositionAndUpdate(entity.posX, entity.posY, entity.posZ);
 
-            if (entity.worldObj.getCollidingBoundingBoxes(entity, entity.getEntityBoundingBox()).isEmpty())
+            if (entity.worldObj.getCollidingBoundingBoxes(entity, entity.boundingBox).isEmpty())
             {
                 flag = true;
             }
@@ -78,7 +78,7 @@ public class PotionTeleportSurface extends PotionCorePotion {
         {
         	if(entity.worldObj instanceof WorldServer) {
 	            
-                ((WorldServer)entity.worldObj).spawnParticle(EnumParticleTypes.PORTAL, true, entity.posX, entity.posY, entity.posZ, 128, 1, 2, 1, 0, new int[0]);
+                ((WorldServer)entity.worldObj).func_147487_a("portal", entity.posX, entity.posY, entity.posZ, 128, 1, 2, 1, 0);
             }
 
             entity.worldObj.playSoundEffect(d0, d1, d2, "mob.endermen.portal", 1.0F, 1.0F);

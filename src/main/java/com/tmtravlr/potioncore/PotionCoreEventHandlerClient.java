@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,13 +18,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.EntityViewRenderEvent.FogDensity;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
@@ -33,6 +25,15 @@ import org.lwjgl.opengl.GLContext;
 import com.tmtravlr.potioncore.PotionCoreEffects.PotionData;
 import com.tmtravlr.potioncore.effects.PotionDrown;
 import com.tmtravlr.potioncore.effects.PotionPerplexity;
+
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class PotionCoreEventHandlerClient {
@@ -45,7 +46,7 @@ public class PotionCoreEventHandlerClient {
 		Minecraft mc = Minecraft.getMinecraft();
 		if(event.type == RenderGameOverlayEvent.ElementType.AIR) {
 
-			EntityLivingBase player = (EntityLivingBase)mc.getRenderViewEntity();
+			EntityLivingBase player = mc.renderViewEntity;
 			PotionData drown = PotionCoreEffects.potionMap.get(PotionDrown.NAME);
 
 			if (player != null && drown != null && drown.potion != null && player.isPotionActive(drown.potion)) {
@@ -55,7 +56,7 @@ public class PotionCoreEventHandlerClient {
 					int air = player.getEntityData().getInteger(PotionDrown.TAG_NAME);
 
 					mc.mcProfiler.startSection("air");
-					GlStateManager.enableBlend();
+					GL11.glEnable(GL11.GL_BLEND);
 					int width = event.resolution.getScaledWidth();
 					int height = event.resolution.getScaledHeight();
 					int left = width / 2 + 91;
@@ -71,7 +72,7 @@ public class PotionCoreEventHandlerClient {
 					GuiIngameForge.right_height += 10;
 
 
-					GlStateManager.disableBlend();
+					GL11.glDisable(GL11.GL_BLEND);
 					mc.mcProfiler.endSection();
 				}
 			}
@@ -96,10 +97,10 @@ public class PotionCoreEventHandlerClient {
 
 				float multiplier = 0.25F / amplifier;
 
-				GlStateManager.setFog(9729);
+				GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
 
-				GlStateManager.setFogStart(f1 * multiplier);
-				GlStateManager.setFogEnd(f1 * multiplier*4);
+				GL11.glFogf(GL11.GL_FOG_START, f1 * multiplier);
+                GL11.glFogf(GL11.GL_FOG_END, f1 * multiplier*4);
 
 
 				if (GLContext.getCapabilities().GL_NV_fog_distance)
@@ -152,7 +153,7 @@ public class PotionCoreEventHandlerClient {
 			if(inverted) {
 
 				saveInverted(false);
-
+				
 				KeyBinding temp = mc.gameSettings.keyBindForward;
 				mc.gameSettings.keyBindForward = mc.gameSettings.keyBindBack;
 				mc.gameSettings.keyBindBack = temp;
@@ -212,7 +213,7 @@ public class PotionCoreEventHandlerClient {
 
 		inverted = toSave;
 
-		if (net.minecraftforge.fml.client.FMLClientHandler.instance().isLoading()) return;
+		if (FMLClientHandler.instance().isLoading()) return;
 		try
 		{
 			File options = ObfuscationReflectionHelper.getPrivateValue(GameSettings.class, Minecraft.getMinecraft().gameSettings, "optionsFile", "field_74354_ai");

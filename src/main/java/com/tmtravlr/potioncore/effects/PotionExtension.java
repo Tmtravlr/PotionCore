@@ -21,8 +21,8 @@ public class PotionExtension extends PotionCorePotion {
 	public static final String NAME = "extension";
 	public static PotionExtension instance = null;
 	
-	public PotionExtension() {
-		super(NAME, false, 0x990099);
+	public PotionExtension(int id) {
+		super(id, NAME, false, 0x990099);
 		instance = this;
     }
     
@@ -35,7 +35,7 @@ public class PotionExtension extends PotionCorePotion {
 		for (int i = amplifier+1; potionList.size() > 0 && i-- > 0;) {
 			effect = potionList.remove(entity.getRNG().nextInt(potionList.size()));
 			if (effect.getPotionID() != this.id && !Potion.potionTypes[effect.getPotionID()].isInstant()) {
-				effect.combine(new PotionEffect(effect.getPotionID(), effect.getDuration()+1, effect.getAmplifier(), effect.getIsAmbient(), effect.getIsShowParticles()));
+				effect.combine(new PotionEffect(effect.getPotionID(), effect.getDuration()+1, effect.getAmplifier(), effect.getIsAmbient()));
 			}
 		}
 	}

@@ -18,8 +18,8 @@ public class PotionInvert extends PotionCorePotion {
 	public static final String NAME = "invert";
 	public static PotionInvert instance = null;
 	
-	public PotionInvert() {
-		super(NAME, true, 0x99FF99);
+	public PotionInvert(int id) {
+		super(id,NAME, true, 0x99FF99);
 		instance = this;
     }
 

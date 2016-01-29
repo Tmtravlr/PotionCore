@@ -2,8 +2,7 @@ package com.tmtravlr.potioncore.effects;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldServer;
 
 import com.tmtravlr.potioncore.potion.PotionCorePotion;
@@ -23,8 +22,8 @@ public class PotionTeleport extends PotionCorePotion {
 	
 	public static double teleportRange = 16.0;
 	
-	public PotionTeleport() {
-		super(NAME, true, 0x00CC99);
+	public PotionTeleport(int id) {
+		super(id, NAME, true, 0x00CC99);
 		instance = this;
     }
 
@@ -64,25 +63,27 @@ public class PotionTeleport extends PotionCorePotion {
         entity.posY = event.targetY;
         entity.posZ = event.targetZ;
         boolean flag = false;
-        BlockPos blockpos = new BlockPos(entity.posX, entity.posY, entity.posZ);
+        int xPos = MathHelper.floor_double(entity.posX);
+        int yPos = MathHelper.floor_double(entity.posY);
+        int zPos = MathHelper.floor_double(entity.posZ);
 
-        if (entity.worldObj.isBlockLoaded(blockpos))
+        if (entity.worldObj.blockExists(xPos, yPos, zPos))
         {
             boolean flag1 = false;
 
-            while (!flag1 && blockpos.getY() > 0)
+            while (!flag1 && yPos > 0)
             {
-                BlockPos blockpos1 = blockpos.down();
-                Block block = entity.worldObj.getBlockState(blockpos1).getBlock();
+            	yPos--;
+                Block block = entity.worldObj.getBlock(xPos, yPos, zPos);
 
                 if (block.getMaterial().blocksMovement())
                 {
                     flag1 = true;
+                    yPos++;
                 }
                 else
                 {
                     --entity.posY;
-                    blockpos = blockpos1;
                 }
             }
 
@@ -90,7 +91,7 @@ public class PotionTeleport extends PotionCorePotion {
             {
             	entity.setPositionAndUpdate(entity.posX, entity.posY, entity.posZ);
 
-                if (entity.worldObj.getCollidingBoundingBoxes(entity, entity.getEntityBoundingBox()).isEmpty() && !entity.worldObj.isAnyLiquid(entity.getEntityBoundingBox()))
+                if (entity.worldObj.getCollidingBoundingBoxes(entity, entity.boundingBox).isEmpty() && !entity.worldObj.isAnyLiquid(entity.boundingBox))
                 {
                     flag = true;
                 }
@@ -106,7 +107,7 @@ public class PotionTeleport extends PotionCorePotion {
         {
             if(entity.worldObj instanceof WorldServer) {
 	            
-                ((WorldServer)entity.worldObj).spawnParticle(EnumParticleTypes.PORTAL, true, entity.posX, entity.posY, entity.posZ, 128, 1, 2, 1, 0, new int[0]);
+                ((WorldServer)entity.worldObj).func_147487_a("portal", entity.posX, entity.posY, entity.posZ, 128, 1, 2, 1, 0);
             }
 
             entity.worldObj.playSoundEffect(d0, d1, d2, "mob.endermen.portal", 1.0F, 1.0F);

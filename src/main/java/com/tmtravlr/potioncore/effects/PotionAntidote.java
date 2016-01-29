@@ -15,8 +15,8 @@ public class PotionAntidote extends PotionCorePotion {
 	public static final String NAME = "antidote";
 	public static PotionAntidote instance = null;
 	
-	public PotionAntidote() {
-		super(NAME, false, 0x00CC99);
+	public PotionAntidote(int id) {
+		super(id, NAME, false, 0x00CC99);
 		instance = this;
     }
     

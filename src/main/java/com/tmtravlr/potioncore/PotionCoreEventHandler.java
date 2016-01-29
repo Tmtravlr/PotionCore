@@ -9,24 +9,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.potion.Potion;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 import com.tmtravlr.potioncore.PotionCoreEffects.PotionData;
 import com.tmtravlr.potioncore.effects.PotionAntidote;
@@ -35,7 +28,6 @@ import com.tmtravlr.potioncore.effects.PotionChance;
 import com.tmtravlr.potioncore.effects.PotionCurse;
 import com.tmtravlr.potioncore.effects.PotionDrown;
 import com.tmtravlr.potioncore.effects.PotionFlight;
-import com.tmtravlr.potioncore.effects.PotionPerplexity;
 import com.tmtravlr.potioncore.effects.PotionPurity;
 import com.tmtravlr.potioncore.effects.PotionRecoil;
 import com.tmtravlr.potioncore.effects.PotionRevival;
@@ -46,6 +38,12 @@ import com.tmtravlr.potioncore.effects.PotionVulnerable;
 import com.tmtravlr.potioncore.effects.PotionWeight;
 import com.tmtravlr.potioncore.network.PacketHandlerClient;
 import com.tmtravlr.potioncore.network.SToCMessage;
+
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class PotionCoreEventHandler {
 	
@@ -123,7 +121,7 @@ public class PotionCoreEventHandler {
 	@SubscribeEvent
 	public void onLivingUpdate (LivingUpdateEvent event) {
 		if (PotionDrown.instance != null && event.entityLiving.isPotionActive(PotionDrown.instance)) {
-			if(event.entityLiving.isServerWorld() && event.entityLiving instanceof EntityPlayerMP) {
+			if(!event.entityLiving.worldObj.isRemote && event.entityLiving instanceof EntityPlayerMP) {
 				if(event.entityLiving.ticksExisted % 20 == 0) {
 					PacketBuffer out = new PacketBuffer(Unpooled.buffer());
 					
@@ -264,7 +262,7 @@ public class PotionCoreEventHandler {
 					double initialZ = player.posZ;
 					
 					if(!player.worldObj.isRemote && player instanceof EntityPlayerMP) {
-						int dimension = player.worldObj.provider.getDimensionId();
+						int dimension = player.worldObj.provider.dimensionId;
 						
 						World world = MinecraftServer.getServer().worldServerForDimension(dimension);
 				        if (world == null)
@@ -278,17 +276,18 @@ public class PotionCoreEventHandler {
 				        
 						world = MinecraftServer.getServer().worldServerForDimension(dimension);
 				        
-				        BlockPos blockpos = player.getBedLocation(dimension);
+				        ChunkCoordinates blockpos = player.getBedLocation(dimension);
 				        if(blockpos != null) {
-				        	blockpos = EntityPlayer.getBedSpawnLocation(world, blockpos, player.isSpawnForced(dimension));
+				        	blockpos = EntityPlayer.verifyRespawnCoordinates(world, blockpos, player.isSpawnForced(dimension));
 				        }
+				        
 				        
 				        if(blockpos == null) {
 				        	blockpos = world.getSpawnPoint();
-				        	blockpos = world.getTopSolidOrLiquidBlock(blockpos);
+				        	blockpos.set(blockpos.posX, world.getTopSolidOrLiquidBlock(blockpos.posX, blockpos.posZ), blockpos.posZ);
 				        }
 				        
-				        PotionCoreTeleporter.teleportPlayer((EntityPlayerMP)player, null, world, blockpos.getX() + 0.5D, blockpos.getY() + 0.1D, blockpos.getZ() + 0.5D);
+				        PotionCoreTeleporter.teleportPlayer((EntityPlayerMP)player, world, blockpos.posX + 0.5D, blockpos.posY + 0.1D, blockpos.posZ + 0.5D);
 					}
 					
 					persisted.setInteger(PotionTeleportSpawn.TAG_NAME, 0);
@@ -305,7 +304,7 @@ public class PotionCoreEventHandler {
 		                double posX = initialX + (player.posX - initialX) * scale + (player.getRNG().nextDouble() - 0.5D) * (double)player.width * 2.0D;
 		                double posY = initialY + (player.posY - initialY) * scale + player.getRNG().nextDouble() * (double)player.height;
 		                double posZ = initialZ + (player.posZ - initialZ) * scale + (player.getRNG().nextDouble() - 0.5D) * (double)player.width * 2.0D;
-		                player.worldObj.spawnParticle(EnumParticleTypes.PORTAL, posX, posY, posZ, (double)motionX, (double)motionY, (double)motionZ, new int[0]);
+		                player.worldObj.spawnParticle("portal", posX, posY, posZ, (double)motionX, (double)motionY, (double)motionZ);
 		            }
 		            
 		            player.worldObj.playSoundEffect(initialX, initialY, initialZ, "mob.endermen.portal", 1.0F, 1.0F);
@@ -316,7 +315,7 @@ public class PotionCoreEventHandler {
 					int particles = spawnDelay == 1 ? 0 : MathHelper.ceiling_double_int((double)spawnDelay/10.0D);
 					
 					for(int i = 0; i < particles; i++) {
-						player.worldObj.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK, player.posX + player.getRNG().nextFloat()*2 - 1, player.posY + player.getRNG().nextFloat()*8, player.posZ + player.getRNG().nextFloat()*2 - 1, 0, 0, 0);
+						player.worldObj.spawnParticle("fireworksSpark", player.posX + player.getRNG().nextFloat()*2 - 1, player.posY + player.getRNG().nextFloat()*8, player.posZ + player.getRNG().nextFloat()*2 - 1, 0, 0, 0);
 					}
 					
 					persisted.setInteger(PotionTeleportSpawn.TAG_NAME, spawnDelay);
@@ -348,7 +347,7 @@ public class PotionCoreEventHandler {
 			out.writeInt(event.entityLiving.getEntityId());
 			
 			SToCMessage packet = new SToCMessage(out);
-			PotionCore.networkWrapper.sendToAllAround(packet, new TargetPoint(event.entityLiving.worldObj.provider.getDimensionId(), event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 16));
+			PotionCore.networkWrapper.sendToAllAround(packet, new TargetPoint(event.entityLiving.worldObj.provider.dimensionId, event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 16));
 			
 			event.entityLiving.removePotionEffect(PotionRevival.instance.getId());
 		}

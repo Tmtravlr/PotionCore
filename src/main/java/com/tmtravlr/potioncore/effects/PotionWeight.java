@@ -17,8 +17,8 @@ public class PotionWeight extends PotionCorePotion {
 	
 	public static float speedReduction = 0.1F;
 	
-	public PotionWeight() {
-		super(NAME, true, 0x555555);
+	public PotionWeight(int id) {
+		super(id, NAME, true, 0x555555);
 		instance = this;
 	}
 }

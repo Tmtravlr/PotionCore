@@ -1,14 +1,18 @@
 package com.tmtravlr.potioncore.network;
 
-import java.util.UUID;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+
+import java.util.Iterator;
+import java.util.UUID;
+
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.server.management.ServerConfigurationManager;
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class PacketHandlerServer implements IMessageHandler<CToSMessage,IMessage> {
 
@@ -29,7 +33,7 @@ public class PacketHandlerServer implements IMessageHandler<CToSMessage,IMessage
 		switch(type) {
 		case CLIMB_FALL: { 
 			
-			Entity player = MinecraftServer.getServer().getConfigurationManager().getPlayerByUUID(new UUID(buff.readLong(), buff.readLong()));
+			Entity player = getPlayerByUUID( MinecraftServer.getServer().getConfigurationManager(), new UUID(buff.readLong(), buff.readLong()));
 			
 			if(player != null) {
 				player.fallDistance = 0.0f;
@@ -43,4 +47,23 @@ public class PacketHandlerServer implements IMessageHandler<CToSMessage,IMessage
 
 		return null;
 	}
+
+    public EntityPlayerMP getPlayerByUUID(ServerConfigurationManager manager, UUID uuid)
+    {
+        Iterator iterator = manager.playerEntityList.iterator();
+        EntityPlayerMP entityplayermp;
+
+        do
+        {
+            if (!iterator.hasNext())
+            {
+                return null;
+            }
+
+            entityplayermp = (EntityPlayerMP)iterator.next();
+        }
+        while (!entityplayermp.func_146094_a(entityplayermp.getGameProfile()).equals(uuid));
+
+        return entityplayermp;
+    }
 }
