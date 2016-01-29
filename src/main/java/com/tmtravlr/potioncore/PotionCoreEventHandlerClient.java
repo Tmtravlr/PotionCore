@@ -130,7 +130,6 @@ public class PotionCoreEventHandlerClient {
 			if(!inverted) {
 				saveInverted(true);
 
-				System.out.println("Starting Perplexity " + player);//TODO
 				KeyBinding temp = mc.gameSettings.keyBindForward;
 
 				mc.gameSettings.keyBindForward = mc.gameSettings.keyBindBack;
@@ -144,7 +143,7 @@ public class PotionCoreEventHandlerClient {
 				mc.gameSettings.keyBindSneak = mc.gameSettings.keyBindJump;
 				mc.gameSettings.keyBindJump = temp;
 
-				//mc.gameSettings.invertMouse = !mc.gameSettings.invertMouse;
+				mc.gameSettings.invertMouse = !mc.gameSettings.invertMouse;
 
 				mc.gameSettings.saveOptions();
 			}
@@ -154,8 +153,6 @@ public class PotionCoreEventHandlerClient {
 
 				saveInverted(false);
 
-				System.out.println("Ending Perplexity " + player);//TODO
-				
 				KeyBinding temp = mc.gameSettings.keyBindForward;
 				mc.gameSettings.keyBindForward = mc.gameSettings.keyBindBack;
 				mc.gameSettings.keyBindBack = temp;
@@ -168,7 +165,7 @@ public class PotionCoreEventHandlerClient {
 				mc.gameSettings.keyBindSneak = mc.gameSettings.keyBindJump;
 				mc.gameSettings.keyBindJump = temp;
 
-				//mc.gameSettings.invertMouse = !mc.gameSettings.invertMouse;
+				mc.gameSettings.invertMouse = !mc.gameSettings.invertMouse;
 
 				mc.gameSettings.saveOptions();
 			}

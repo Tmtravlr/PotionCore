@@ -1,6 +1,8 @@
 package com.tmtravlr.potioncore.effects;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.MathHelper;
 
 import com.tmtravlr.potioncore.potion.PotionCorePotion;
 
@@ -17,7 +19,7 @@ public class PotionFire extends PotionCorePotion {
 	public static final String NAME = "fire";
 	public static PotionFire instance = null;
 
-	public static int fireDuration = 10;
+	public static float fireDuration = 10;
 	
 	public PotionFire() {
 		super(NAME, true, 0xFF5500);
@@ -30,11 +32,19 @@ public class PotionFire extends PotionCorePotion {
     }
 	
 	@Override
-    public void performEffect(EntityLivingBase entityLivingBaseIn, int amplifier) {
+	public void affectEntity(Entity thrownPotion, Entity thrower, EntityLivingBase entity, int amplifier, double potency) {
+		
+		int duration = MathHelper.ceiling_double_int((double)(amplifier + 1) * (double)fireDuration * potency);
+    	
+		entity.setFire(duration);
+    }
+	
+	@Override
+    public void performEffect(EntityLivingBase entity, int amplifier) {
     	
     	//10 seconds of fire for each level
-    	int duration = (amplifier+1) * fireDuration;
+    	int duration = MathHelper.ceiling_float_int((float)(amplifier+1) * fireDuration);
     	
-    	entityLivingBaseIn.setFire(duration);
+    	entity.setFire(duration);
     }
 }

@@ -58,10 +58,10 @@ public class ConfigLoader {
 		PotionExplosionSelf.explosionSize = config.getFloat("Explosion Size", PotionExplosionSelf.NAME, PotionExplosionSelf.explosionSize, 0.0f, Float.POSITIVE_INFINITY,
 				"The base explosion size for the " + PotionExplosionSelf.NAME + " potion.\n");
 
-		PotionFire.fireDuration = config.getInt("Fire Duration", PotionFire.NAME, PotionFire.fireDuration, 0, Integer.MAX_VALUE,
-				"The fire duration applied by the " + PotionFire.NAME + " potion for each amplifier level.\n");
+		PotionFire.fireDuration = config.getFloat("Fire Duration", PotionFire.NAME, PotionFire.fireDuration, 0.0f, Float.POSITIVE_INFINITY,
+				"The fire duration in seconds applied by the " + PotionFire.NAME + " potion for each amplifier level.\n");
 
-		PotionKlutz.damageModifier = config.getFloat("Damage Modifier", PotionKlutz.NAME, (float) PotionKlutz.damageModifier, 0.0f, Float.POSITIVE_INFINITY,
+		PotionKlutz.damageModifier = config.getFloat("Damage Modifier", PotionKlutz.NAME, (float) PotionKlutz.damageModifier, Float.NEGATIVE_INFINITY, 0.0f,
 				"The projectile damage modifier applied by the " + PotionKlutz.NAME + " potion per each amplifier level.\n");
 
 		PotionLaunch.launchSpeed = config.getFloat("Launch Speed", PotionLaunch.NAME, (float) PotionLaunch.launchSpeed, 0.0f, Float.POSITIVE_INFINITY,
