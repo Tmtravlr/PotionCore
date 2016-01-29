@@ -1,5 +1,7 @@
 package com.tmtravlr.potioncore;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,6 +15,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.registry.GameData;
 
 import com.tmtravlr.potioncore.effects.*;
@@ -35,7 +39,62 @@ public class PotionCoreHelper {
 	public static HashMap<Potion, Potion> oppositeEffects = new HashMap<Potion, Potion>();
 	
 	public static final IAttribute projectileDamage = new RangedAttribute((IAttribute)null, "generic.projectileDamage", 1.0D, 0.0D, 2048.0D);
+	
+	
+	//Increase the max number of potion ids to 256
+	public static void increasePotionTypesSize() {
+		Field potionTypes = null;
+		FMLLog.info("[Potion Core] Attempting to increase max number of potions.");
+		try
+		{
+			//Get the potion types field from the fortress generation.
+			potionTypes = Potion.class.getDeclaredField("field_76425_a");
 
+			//Make it not a final field... (This is so sketchy...)
+			Field modifiersField = Field.class.getDeclaredField("modifiers");
+			modifiersField.setAccessible(true);
+			modifiersField.setInt(potionTypes, potionTypes.getModifiers() & ~Modifier.FINAL);
+		}
+		catch (Exception e)
+		{
+			try
+			{
+				//Get the potion types field from the fortress generation.
+				potionTypes = Potion.class.getDeclaredField("potionTypes");
+
+				//Make it not a final field... (This is so sketchy...)
+				Field modifiersField = Field.class.getDeclaredField("modifiers");
+				modifiersField.setAccessible(true);
+				modifiersField.setInt(potionTypes, potionTypes.getModifiers() & ~Modifier.FINAL);
+			}
+			catch (Exception e2)
+			{
+				FMLLog.warning("[Potion Core] Couldn't increase the maximum number of potions!");
+				e.printStackTrace();
+				e2.printStackTrace();
+			}
+		}
+		
+		if(potionTypes != null) {
+			try {
+				Potion[] newPotionTypes = new Potion[256];
+				
+				for(int i = 0; i < newPotionTypes.length && i < Potion.potionTypes.length; i++) {
+					newPotionTypes[i] = Potion.potionTypes[i];
+				}
+				
+				potionTypes.set(null, newPotionTypes);
+			} catch (Exception e) {
+				FMLLog.warning("[Potion Core] Couldn't increase the maximum number of potions!");
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static boolean isBadEffect(Potion potion) {
+		return ObfuscationReflectionHelper.getPrivateValue(Potion.class, potion, "field_76418_K", "isBadEffect");
+	}
+	
 	//Loads the opposite effects for the inversion potion
 	public static void loadInversions() {
 		loadInversion(Potion.blindness, Potion.nightVision);
@@ -77,7 +136,7 @@ public class PotionCoreHelper {
     	while(it.hasNext()) {
     		PotionEffect effect = it.next();
     		
-    		if(!Potion.potionTypes[effect.getPotionID()].isBadEffect()) {
+    		if(!isBadEffect(Potion.potionTypes[effect.getPotionID()])) {
     			idsToRemove.add(effect.getPotionID());
     		}
     		
@@ -100,7 +159,7 @@ public class PotionCoreHelper {
     	while(it.hasNext()) {
     		PotionEffect effect = it.next();
     		
-    		if(Potion.potionTypes[effect.getPotionID()].isBadEffect()) {
+    		if(isBadEffect(Potion.potionTypes[effect.getPotionID()])) {
     			idsToRemove.add(effect.getPotionID());
     		}
     		
@@ -148,7 +207,7 @@ public class PotionCoreHelper {
 	 */
 	public static void invertPotionEffects(EntityLivingBase entity) {
 		PotionEffect[] effects = new PotionEffect[0];
-		effects = entity.getActivePotionEffects().toArray(effects);
+		effects = (PotionEffect[]) entity.getActivePotionEffects().toArray(effects);
     	
     	for(int i = 0; i < effects.length; i++) {
     		PotionEffect effect = effects[i];
@@ -203,7 +262,12 @@ public class PotionCoreHelper {
 	 */
 	public static NBTTagCompound writePotionToTag(Potion potion, int duration, int amplifier) {
 		NBTTagCompound tag = new NBTTagCompound();
-		tag.setString("Id", GameData.getPotionRegistry().getNameForObject(potion).toString());
+		String[] names = Potion.getPotionMapAsArray();
+		for(int i = 0; i < names.length; i++) {
+			if(Potion.getPotionFromResourceLocation(names[i]) == potion) {
+				tag.setString("Id", names[i]);
+			}
+		}
 		tag.setInteger("Amplifier", amplifier);
 		tag.setInteger("Duration", duration);
 		return tag;

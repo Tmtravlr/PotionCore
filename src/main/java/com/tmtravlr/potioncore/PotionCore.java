@@ -58,6 +58,7 @@ public class PotionCore
     public void preInit(FMLPreInitializationEvent event) {
 		ConfigLoader.config = new Configuration(event.getSuggestedConfigurationFile());
         ConfigLoader.load();
+        PotionCoreHelper.increasePotionTypesSize();
         PotionCoreEffects.loadPotionEffects();
         proxy.loadInverted();
         
@@ -88,7 +89,7 @@ public class PotionCore
     	//Get good and bad potion effects
 		for(int i = 0; i < Potion.potionTypes.length; i++) {
 			if(Potion.potionTypes[i] != null) {
-				if(Potion.potionTypes[i].isBadEffect()) {
+				if(PotionCoreHelper.isBadEffect(Potion.potionTypes[i])) {
 					PotionCoreHelper.badEffectList.add(Potion.potionTypes[i]);
 				}
 				else {

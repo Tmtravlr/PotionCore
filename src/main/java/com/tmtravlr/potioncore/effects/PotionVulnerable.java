@@ -17,8 +17,8 @@ public class PotionVulnerable extends PotionCorePotion {
 	
 	public static double damageMultiplier = 1.5;
 	
-	public PotionVulnerable() {
-		super(NAME, true, 0x557700);
+	public PotionVulnerable(int id) {
+		super(id, NAME, true, 0x557700);
 		instance = this;
 	}
 }

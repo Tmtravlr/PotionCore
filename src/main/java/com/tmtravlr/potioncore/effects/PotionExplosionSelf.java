@@ -21,8 +21,8 @@ public class PotionExplosionSelf extends PotionCorePotion {
 
 	public static float explosionSize = 2.0f;
 	
-	public PotionExplosionSelf() {
-		super(NAME, false, 0x666666);
+	public PotionExplosionSelf(int id) {
+		super(id, NAME, false, 0x666666);
 		instance = this;
 	}
 

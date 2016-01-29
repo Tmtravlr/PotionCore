@@ -21,8 +21,8 @@ public class PotionTeleportSurface extends PotionCorePotion {
 	public static final String NAME = "teleportsurface";
 	public static PotionTeleportSurface instance = null;
 	
-	public PotionTeleportSurface() {
-		super(NAME, false, 0x00FF99);
+	public PotionTeleportSurface(int id) {
+		super(id, NAME, false, 0x00FF99);
 		instance = this;
     }
 

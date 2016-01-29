@@ -16,8 +16,8 @@ public class PotionPerplexity extends PotionCorePotion {
 	public static final String TAG_NAME = "potion core - perplexity";
 	public static PotionPerplexity instance = null;
 	
-	public PotionPerplexity() {
-		super(NAME, true, 0x9900FF);
+	public PotionPerplexity(int id) {
+		super(id, NAME, true, 0x9900FF);
 		instance = this;
     }
     

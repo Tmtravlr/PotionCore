@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class CommonProxy {
 
@@ -13,7 +14,7 @@ public class CommonProxy {
 	
 	public void registerEventHandlers() {
 		MinecraftForge.EVENT_BUS.register(new PotionCoreEventHandler());
-		//FMLCommonHandler.instance().bus().register(new PotionCoreEventHandler());
+		FMLCommonHandler.instance().bus().register(new PotionCoreEventHandler());
 	}
 	
 	public void registerRenderers() {}

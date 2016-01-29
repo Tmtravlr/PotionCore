@@ -17,8 +17,8 @@ public class PotionRevival extends PotionCorePotion {
 	
 	public static float reviveHealth = 4.0f;
 	
-	public PotionRevival() {
-		super(NAME, false, 0xFF0000);
+	public PotionRevival(int id) {
+		super(id, NAME, false, 0xFF0000);
 		instance = this;
 	}
 }

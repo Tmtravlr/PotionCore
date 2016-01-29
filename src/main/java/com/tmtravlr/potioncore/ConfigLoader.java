@@ -4,6 +4,7 @@ import net.minecraftforge.common.config.Configuration;
 
 import com.tmtravlr.potioncore.PotionCoreEffects.PotionData;
 import com.tmtravlr.potioncore.effects.PotionArchery;
+import com.tmtravlr.potioncore.effects.PotionAttackDamageModified;
 import com.tmtravlr.potioncore.effects.PotionExplosion;
 import com.tmtravlr.potioncore.effects.PotionExplosionSelf;
 import com.tmtravlr.potioncore.effects.PotionFire;
@@ -28,6 +29,9 @@ public class ConfigLoader {
 	
 	public static boolean fixInvisibility;
 	public static boolean fixBlindness;
+	public static boolean modifyStrength;
+	
+	public static int maxPotions = 256;
 	
 	public static void load() {
 		config.load();
@@ -36,12 +40,15 @@ public class ConfigLoader {
 		
 		fixInvisibility = config.getBoolean("Fix Invisibiliby", "_options", true, "Fixes Invisibiliby so mobs can't see you as close while you are invisible.\nThey can see you at 1-12 blocks away depending on how much armor you\nhave on and if you are holding a item or not.");
 		fixBlindness = config.getBoolean("Fix Blindness", "_options", true, "Fixes Blindness so mobs can't see things to attack unless they are really\nclose.");
+		modifyStrength = config.getBoolean("Modify Strength", "_options", true, "Modifies the strength buff so it isn't as powerful (because it's\noverpowered; or you can make it more powerful).");
+		PotionAttackDamageModified.modifier = config.getFloat("Modified Strength Amount", "_options", PotionAttackDamageModified.modifier, 0.0f, Float.POSITIVE_INFINITY, "Damage increase percent for the modified strength potion. Vanilla has 1.3.\n");
+		maxPotions = config.getInt("Max Potions", "_options", maxPotions, 32, Integer.MAX_VALUE, "Change the maximum number of potions available in the game to this number.\n");
 		
 		for(String name : PotionCoreEffects.potionMap.keySet()) {
 			PotionData data = PotionCoreEffects.potionMap.get(name);
 			
 			data.enabled = config.getBoolean("Enabled", name, data.enabled, "Is the " + name + " potion enabled?");
-			//data.id = config.getInt("Id", name, data.id, 0, 255, "Id of the " + name + " potion.");
+			data.id = config.getInt("Id", name, data.id, -1, maxPotions, "Id of the " + name + " potion. -1 makes it find the next available id.");
 		}
 		
 		config.save();

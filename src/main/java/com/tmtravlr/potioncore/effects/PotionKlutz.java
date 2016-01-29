@@ -18,8 +18,8 @@ public class PotionKlutz extends PotionCorePotion {
 
 	public static double damageModifier = -0.3;
 	
-	public PotionKlutz() {
-		super(NAME, true, 0x999933);
+	public PotionKlutz(int id) {
+		super(id, NAME, true, 0x999933);
 		instance = this;
 		this.registerPotionAttributeModifier(PotionCoreHelper.projectileDamage, "fd747754-0718-456c-8538-330c4ab65793", damageModifier, 2);
 	}

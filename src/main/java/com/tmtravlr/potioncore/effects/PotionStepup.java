@@ -19,8 +19,8 @@ public class PotionStepup extends PotionCorePotion {
 	
 	public static float increase = 0.5f;
 	
-	public PotionStepup() {
-		super(NAME, false, 0x33CC33);
+	public PotionStepup(int id) {
+		super(id, NAME, false, 0x33CC33);
 		instance = this;
     }
 }

@@ -152,7 +152,7 @@ public class PotionCoreEventHandlerClient {
 			if(inverted) {
 
 				saveInverted(false);
-
+				
 				KeyBinding temp = mc.gameSettings.keyBindForward;
 				mc.gameSettings.keyBindForward = mc.gameSettings.keyBindBack;
 				mc.gameSettings.keyBindBack = temp;

@@ -27,8 +27,8 @@ public class PotionTeleportSpawn extends PotionCorePotion {
 	
 	public static int teleportDelay = 200;
 	
-	public PotionTeleportSpawn() {
-		super(NAME, false, 0x9955FF);
+	public PotionTeleportSpawn(int id) {
+		super(id, NAME, false, 0x9955FF);
 		instance = this;
     }
 

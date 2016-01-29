@@ -21,8 +21,8 @@ public class PotionExtension extends PotionCorePotion {
 	public static final String NAME = "extension";
 	public static PotionExtension instance = null;
 	
-	public PotionExtension() {
-		super(NAME, false, 0x990099);
+	public PotionExtension(int id) {
+		super(id, NAME, false, 0x990099);
 		instance = this;
     }
     

@@ -17,8 +17,8 @@ public class PotionCorePotion extends Potion {
 	
 	public ResourceLocation icon;
 	
-	public PotionCorePotion(String potionName, boolean bad, int color) {
-		super(new ResourceLocation(PotionCore.MOD_ID, potionName), bad, color);
+	public PotionCorePotion(int id, String potionName, boolean bad, int color) {
+		super(id, new ResourceLocation(PotionCore.MOD_ID, potionName), bad, color);
 		this.setPotionName("potion."+potionName);
 		this.icon = new ResourceLocation(PotionCore.MOD_ID, "textures/gui/potion/"+potionName+".png");
     }
@@ -104,11 +104,11 @@ public class PotionCorePotion extends Potion {
         float heightRatio = 1.0f / 18.0f;
         net.minecraft.client.renderer.Tessellator tessellator = net.minecraft.client.renderer.Tessellator.getInstance();
         net.minecraft.client.renderer.WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        worldrenderer.begin(7, net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_TEX);
-        worldrenderer.pos((double)(x + 0), (double)(y + height), 0).tex(0, (double)((float)height * heightRatio)).endVertex();
-        worldrenderer.pos((double)(x + width), (double)(y + height), 0).tex((double)((float)width * widthRatio), (double)((float)height * heightRatio)).endVertex();
-        worldrenderer.pos((double)(x + width), (double)(y + 0), 0).tex((double)((float)width * widthRatio), 0).endVertex();
-        worldrenderer.pos((double)(x + 0), (double)(y + 0), 0).tex(0, 0).endVertex();
+        worldrenderer.startDrawingQuads();
+        worldrenderer.addVertexWithUV((double)(x + 0), (double)(y + height), 0, 0, (double)((float)height * heightRatio));
+        worldrenderer.addVertexWithUV((double)(x + width), (double)(y + height), 0, (double)((float)width * widthRatio), (double)((float)height * heightRatio));
+        worldrenderer.addVertexWithUV((double)(x + width), (double)(y + 0), 0, (double)((float)width * widthRatio), 0);
+        worldrenderer.addVertexWithUV((double)(x + 0), (double)(y + 0), 0, 0, 0);
         tessellator.draw();
     }
 	

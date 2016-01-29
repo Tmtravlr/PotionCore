@@ -93,6 +93,7 @@ public class ItemPotionCorePotion extends ItemPotion {
             {
             	EntityPotionCorePotion potionEntity = new EntityPotionCorePotion(worldIn, playerIn, copy);
                 worldIn.spawnEntityInWorld(potionEntity);
+                potionEntity.sendPotionToClient();
             }
 
             playerIn.triggerAchievement(StatList.objectUseStats[Item.getIdFromItem(this)]);
@@ -159,7 +160,7 @@ public class ItemPotionCorePotion extends ItemPotion {
      * allows items to add custom lines of information to the mouseover description
      */
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
+    public void addInformation(ItemStack stack, EntityPlayer playerIn, List tooltip, boolean advanced)
     {
         List<PotionEffect> list = this.getEffects(stack);
         Multimap<String, AttributeModifier> multimap = HashMultimap.<String, AttributeModifier>create();

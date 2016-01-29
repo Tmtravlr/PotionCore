@@ -20,8 +20,8 @@ public class PotionRepair extends PotionCorePotion {
 	
 	public static int repairTime = 100;
 	
-	public PotionRepair() {
-		super(NAME, false, 0x777777);
+	public PotionRepair(int id) {
+		super(id, NAME, false, 0x777777);
 		instance = this;
     }
     

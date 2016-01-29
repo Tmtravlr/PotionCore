@@ -22,8 +22,8 @@ public class PotionDrown extends PotionCorePotion {
 	public static final String TAG_BOOLEAN = "potioncore - doing drown";
 	public static PotionDrown instance = null;
 	
-	public PotionDrown() {
-		super(NAME, true, 0x00FFFF);
+	public PotionDrown(int id) {
+		super(id, NAME, true, 0x00FFFF);
 		instance = this;
 	}
 	

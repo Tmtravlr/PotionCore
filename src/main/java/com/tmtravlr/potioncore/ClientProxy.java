@@ -18,6 +18,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class ClientProxy extends CommonProxy {
 	
@@ -30,6 +31,7 @@ public class ClientProxy extends CommonProxy {
 	public void registerEventHandlers() {
 		super.registerEventHandlers();
 		MinecraftForge.EVENT_BUS.register(new PotionCoreEventHandlerClient());
+		FMLCommonHandler.instance().bus().register(new PotionCoreEventHandlerClient());
 	}
 	
 	public void registerRenderers() {
@@ -77,7 +79,7 @@ public class ClientProxy extends CommonProxy {
             double d24 = Math.cos(d23) * d22;
             double d9 = 0.01D + random.nextDouble() * 0.5D;
             double d11 = Math.sin(d23) * d22;
-            EntityFX entityfx = spawnPotionParticle(enumparticletypes.getParticleID(), enumparticletypes.getShouldIgnoreRange(), d13 + d24 * 0.1D, d14 + 0.3D, d16 + d11 * 0.1D, d24, d9, d11, new int[0]);
+            EntityFX entityfx = spawnPotionParticle(enumparticletypes.getParticleID(), enumparticletypes.func_179344_e(), d13 + d24 * 0.1D, d14 + 0.3D, d16 + d11 * 0.1D, d24, d9, d11, new int[0]);
 
             if (entityfx != null)
             {

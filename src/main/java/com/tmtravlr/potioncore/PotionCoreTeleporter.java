@@ -180,7 +180,7 @@ public class PotionCoreTeleporter extends Teleporter
 
 		player.setWorld(worldServerNew);
 
-		player.mcServer.getConfigurationManager().preparePlayer(player, worldServerOld);
+		player.mcServer.getConfigurationManager().func_72375_a(player, worldServerOld);
 		player.playerNetServerHandler.setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
 		player.theItemInWorldManager.setWorld(worldServerNew);
 		player.mcServer.getConfigurationManager().updateTimeAndWeatherForPlayer(player, worldServerNew);

@@ -24,8 +24,8 @@ public class PotionLevitate extends PotionCorePotion {
 
 	public static double floatSpeed = 0.02;
 	
-	public PotionLevitate() {
-		super(NAME, true, 0xFFCCFF);
+	public PotionLevitate(int id) {
+		super(id, NAME, true, 0xFFCCFF);
 		instance = this;
     }
 	

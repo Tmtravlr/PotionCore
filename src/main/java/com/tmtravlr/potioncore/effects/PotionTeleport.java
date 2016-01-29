@@ -23,8 +23,8 @@ public class PotionTeleport extends PotionCorePotion {
 	
 	public static double teleportRange = 16.0;
 	
-	public PotionTeleport() {
-		super(NAME, true, 0x00CC99);
+	public PotionTeleport(int id) {
+		super(id, NAME, true, 0x00CC99);
 		instance = this;
     }
 

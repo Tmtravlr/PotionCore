@@ -18,8 +18,8 @@ public class PotionCure extends PotionCorePotion {
 	public static final String NAME = "cure";
 	public static PotionCure instance = null;
 	
-	public PotionCure() {
-		super(NAME, false, 0xFF55FF);
+	public PotionCure(int id) {
+		super(id, NAME, false, 0xFF55FF);
 		instance = this;
     }
 

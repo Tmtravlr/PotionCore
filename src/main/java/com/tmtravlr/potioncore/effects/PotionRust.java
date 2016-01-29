@@ -21,8 +21,8 @@ public class PotionRust extends PotionCorePotion {
 	
 	public static int damageTime = 20;
 	
-	public PotionRust() {
-		super(NAME, true, 0x773300);
+	public PotionRust(int id) {
+		super(id, NAME, true, 0x773300);
 		instance = this;
     }
     

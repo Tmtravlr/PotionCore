@@ -22,8 +22,8 @@ public class PotionLove extends PotionCorePotion {
 	public static final String NAME = "love";
 	public static PotionLove instance = null;
 	
-	public PotionLove() {
-		super(NAME, false, 0xFF3333);
+	public PotionLove(int id) {
+		super(id, NAME, false, 0xFF3333);
 		instance = this;
     }
 

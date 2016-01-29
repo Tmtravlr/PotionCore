@@ -2,6 +2,7 @@ package com.tmtravlr.potioncore.effects;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.util.MathHelper;
 
 import com.tmtravlr.potioncore.potion.PotionCorePotion;
@@ -21,8 +22,8 @@ public class PotionFire extends PotionCorePotion {
 
 	public static float fireDuration = 10;
 	
-	public PotionFire() {
-		super(NAME, true, 0xFF5500);
+	public PotionFire(int id) {
+		super(id, NAME, true, 0xFF5500);
 		instance = this;
     }
 

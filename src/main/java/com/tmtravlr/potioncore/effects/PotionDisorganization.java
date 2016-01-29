@@ -19,8 +19,8 @@ public class PotionDisorganization extends PotionCorePotion {
 	public static final String NAME = "disorganization";
 	public static PotionDisorganization instance = null;
 	
-	public PotionDisorganization() {
-		super(NAME, true, 0x9900FF);
+	public PotionDisorganization(int id) {
+		super(id, NAME, true, 0x9900FF);
 		instance = this;
     }
 
