@@ -17,6 +17,8 @@ public class PotionCurse extends PotionCorePotion {
 
 	public static final String NAME = "curse";
 	public static PotionCurse instance = null;
+
+	public static String[] blacklist = {};
 	
 	public PotionCurse() {
 		super(NAME, true, 0x000000);

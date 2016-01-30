@@ -13,7 +13,7 @@ import com.tmtravlr.potioncore.potion.PotionCorePotion;
 /**
  * Lets you climb like a spider.<br><br>
  * Instant: no<br>
- * Amplifier affects it: no
+ * Amplifier affects it: yes
  * 
  * @author Rebeca Rey (Tmtravlr)
  * @Date January 2016
@@ -23,24 +23,22 @@ public class PotionClimb extends PotionCorePotion {
 	public static final String NAME = "climb";
 	public static PotionClimb instance = null;
 	
+	public static double climbSpeed = 0.2;
+	
 	public PotionClimb() {
 		super(NAME, false, 0xCC5500);
 		instance = this;
     }
     
     @Override
-    public boolean canAmplify() {
-		return false;
-	}
-    
-    @Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
-    	if ((entity.isCollidedHorizontally))
+    	if (entity.isCollidedHorizontally)
     	{
     		if (!entity.isSneaking())
     		{
-    			if (entity.moveForward > 0.0f && entity.motionY < 0.2) {
-    				entity.motionY = 0.2;
+                double minSpeed = climbSpeed * (amplifier + 1);
+    			if (entity.moveForward > 0.0f && entity.motionY < minSpeed) {
+    				entity.motionY = minSpeed;
     			}
     		}
     		else {

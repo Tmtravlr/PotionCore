@@ -17,6 +17,8 @@ public class PotionBless extends PotionCorePotion {
 
 	public static final String NAME = "bless";
 	public static PotionBless instance = null;
+
+	public static String[] blacklist = {};
 	
 	public PotionBless() {
 		super(NAME, false, 0x66CCFF);

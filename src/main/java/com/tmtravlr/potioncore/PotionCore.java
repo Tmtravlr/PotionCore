@@ -1,7 +1,6 @@
 package com.tmtravlr.potioncore;
 
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
 import net.minecraftforge.common.config.Configuration;
@@ -18,6 +17,9 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import com.tmtravlr.potioncore.effects.PotionBless;
+import com.tmtravlr.potioncore.effects.PotionCurse;
+import com.tmtravlr.potioncore.effects.PotionExtension;
 import com.tmtravlr.potioncore.network.CToSMessage;
 import com.tmtravlr.potioncore.network.PacketHandlerClient;
 import com.tmtravlr.potioncore.network.PacketHandlerServer;
@@ -47,6 +49,7 @@ public class PotionCore
 	public static SimpleNetworkWrapper networkWrapper;
 	
 	public static CreativeTabs tabPotionCore = new CreativeTabs(MOD_ID) {
+		@Override
 		@SideOnly(Side.CLIENT)
         public Item getTabIconItem()
         {
@@ -94,6 +97,21 @@ public class PotionCore
 				else {
 					PotionCoreHelper.goodEffectList.add(Potion.potionTypes[i]);
 				}
+			}
+		}
+		
+		// Remove blacklisted potions
+		for (String name : PotionBless.blacklist) {
+			PotionCoreHelper.goodEffectList.remove(Potion.getPotionFromResourceLocation(name));
+		}
+		for (String name : PotionCurse.blacklist) {
+			PotionCoreHelper.badEffectList.remove(Potion.getPotionFromResourceLocation(name));
+		}
+		Potion potion;
+		for (String name : PotionExtension.blacklist) {
+			potion = Potion.getPotionFromResourceLocation(name);
+			if (potion != null) {
+				PotionExtension.potionBlacklist.add(potion);
 			}
 		}
         

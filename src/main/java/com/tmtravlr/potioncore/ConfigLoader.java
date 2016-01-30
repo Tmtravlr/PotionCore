@@ -4,8 +4,13 @@ import net.minecraftforge.common.config.Configuration;
 
 import com.tmtravlr.potioncore.PotionCoreEffects.PotionData;
 import com.tmtravlr.potioncore.effects.PotionArchery;
+import com.tmtravlr.potioncore.effects.PotionBless;
+import com.tmtravlr.potioncore.effects.PotionChance;
+import com.tmtravlr.potioncore.effects.PotionClimb;
+import com.tmtravlr.potioncore.effects.PotionCurse;
 import com.tmtravlr.potioncore.effects.PotionExplosion;
 import com.tmtravlr.potioncore.effects.PotionExplosionSelf;
+import com.tmtravlr.potioncore.effects.PotionExtension;
 import com.tmtravlr.potioncore.effects.PotionFire;
 import com.tmtravlr.potioncore.effects.PotionKlutz;
 import com.tmtravlr.potioncore.effects.PotionLaunch;
@@ -52,12 +57,24 @@ public class ConfigLoader {
 		PotionArchery.damageModifier = config.getFloat("Damage Modifier", PotionArchery.NAME, (float) PotionArchery.damageModifier, 0.0f, Float.POSITIVE_INFINITY,
 				"The projectile damage modifier applied by the " + PotionArchery.NAME + " potion per each amplifier level.\n");
 
+		PotionBless.blacklist = config.getStringList("Blacklist", PotionBless.NAME, PotionBless.blacklist,
+				"Positive potions that will not be applied by the " + PotionBless.NAME + " potion (also applies to the " + PotionChance.NAME + " potion).\n");
+		
+		PotionClimb.climbSpeed = config.getFloat("Climb Speed", PotionClimb.NAME, (float) PotionClimb.climbSpeed, 0.0f, Float.POSITIVE_INFINITY,
+				"The climbing speed given by the " + PotionClimb.NAME + " potion per each amplifier level.\n");
+
+		PotionCurse.blacklist = config.getStringList("Blacklist", PotionCurse.NAME, PotionCurse.blacklist,
+				"Negative potions that will not be applied by the " + PotionCurse.NAME + " potion (also applies to the " + PotionChance.NAME + " potion).\n");
+		
 		PotionExplosion.explosionSize = config.getFloat("Explosion Size", PotionExplosion.NAME, PotionExplosion.explosionSize, 0.0f, Float.POSITIVE_INFINITY,
 				"The base explosion size for the " + PotionExplosion.NAME + " potion.\n");
 
 		PotionExplosionSelf.explosionSize = config.getFloat("Explosion Size", PotionExplosionSelf.NAME, PotionExplosionSelf.explosionSize, 0.0f, Float.POSITIVE_INFINITY,
 				"The base explosion size for the " + PotionExplosionSelf.NAME + " potion.\n");
 
+		PotionExtension.blacklist = config.getStringList("Blacklist", PotionExtension.NAME, PotionExtension.blacklist,
+				"Potions that will not be extended by the " + PotionExtension.NAME + " potion.\n");
+		
 		PotionFire.fireDuration = config.getFloat("Fire Duration", PotionFire.NAME, PotionFire.fireDuration, 0.0f, Float.POSITIVE_INFINITY,
 				"The fire duration in seconds applied by the " + PotionFire.NAME + " potion for each amplifier level.\n");
 
@@ -103,5 +120,4 @@ public class ConfigLoader {
 		PotionWeight.speedReduction = config.getFloat("Jump Height Reduction", PotionWeight.NAME, PotionWeight.speedReduction, 0.0f, Float.POSITIVE_INFINITY,
 				"The base jump speed reduction for the " + PotionWeight.NAME + " potion.\nNormal jump speed is about 0.4 block/tick.\n");
 	}
-	
 }
